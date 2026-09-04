@@ -1,3 +1,4 @@
+import { useState, useRef } from "react";
 import {
   AreaChart,
   Area,
@@ -17,10 +18,10 @@ import {
 const ME = "Ты";
 
 const members = [
-  { id: "me", name: "Ты", color: "#21A038" },
-  { id: "anya", name: "Аня", color: "#0F5132" },
-  { id: "dima", name: "Дима", color: "#4CAF6D" },
-  { id: "sonya", name: "Соня", color: "#A3D9B1" },
+  { id: "me", name: "Ты", color: "#3FC8A0" },
+  { id: "anya", name: "Аня", color: "#A8CF38" },
+  { id: "dima", name: "Дима", color: "#B54FB5" },
+  { id: "sonya", name: "Соня", color: "#9BA3AE" },
 ];
 
 const settlements = [
@@ -43,13 +44,12 @@ const weekly = [
 ];
 
 const categories = [
-  { name: "Аренда", sum: 32000, trend: 0 },
-  { name: "Продукты", sum: 18400, trend: 4 },
-  { name: "Доставка", sum: 6800, trend: 180 },
-  { name: "Развлечения", sum: 5600, trend: -12 },
-  { name: "Коммуналка", sum: 4200, trend: 6 },
-  { name: "Транспорт", sum: 3100, trend: -3 },
-  { name: "Подписки", sum: 1490, trend: 0 },
+  { name: "Аренда", sum: 32000, trend: 0, color: "#0F3D2E" },
+  { name: "Продукты", sum: 18400, trend: 4, color: "#12603F" },
+  { name: "Доставка", sum: 6800, trend: 180, color: "#21A038" },
+  { name: "Развлечения", sum: 5600, trend: -12, color: "#4CAF6D" },
+  { name: "Коммуналка", sum: 4200, trend: 6, color: "#7BC894" },
+  { name: "Другое", sum: 2400, trend: 8, color: "#E3F1E7" },
 ];
 
 const byMember = [
@@ -57,6 +57,13 @@ const byMember = [
   { name: "Ты", sum: 17898, color: "#21A038" },
   { name: "Дима", sum: 9600, color: "#4CAF6D" },
   { name: "Соня", sum: 5892, color: "#A3D9B1" },
+];
+
+const spentByMember = [
+  { name: "Аня", sum: 19420, color: "#A8CF38" },
+  { name: "Ты", sum: 17898, color: "#3FC8A0" },
+  { name: "Дима", sum: 18630, color: "#B54FB5" },
+  { name: "Соня", sum: 15642, color: "#9BA3AE" },
 ];
 
 const transactions = [
@@ -70,6 +77,12 @@ const transactions = [
 const budgetTotal = 78000;
 const budgetSpent = 71590;
 
+const goal = {
+  name: "Новый диван в гостиную",
+  target: 45000,
+  saved: 28400,
+  deadline: "к 15 октября",
+};
 /* ---------------- МЕЛКИЕ КОМПОНЕНТЫ ---------------- */
 
 const money = (n: number) => n.toLocaleString("ru-RU") + " ₽";
@@ -124,7 +137,7 @@ function Logo() {
   return (
     <div className="flex items-center gap-3">
       <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[#21A038]">
-        <MarkArrows />
+        <MarkPie />
       </div>
       <div>
         <p className="text-lg font-semibold leading-tight tracking-tight">СберПоровну</p>
@@ -170,14 +183,16 @@ function Stat({
 }) {
   return (
     <div
-      className={`rounded-3xl p-5 ${
+      className={`flex items-baseline justify-between gap-3 rounded-3xl px-5 py-4 ${
         dark ? "bg-[#0F3D2E] text-white" : "bg-white text-neutral-900"
       }`}
     >
-      <p className={`text-sm ${dark ? "text-white/70" : "text-neutral-500"}`}>{label}</p>
-      <p className="mt-3 text-3xl font-semibold tracking-tight">{value}</p>
+      <div>
+        <p className={`text-base ${dark ? "text-white/80" : "text-neutral-600"}`}>{label}</p>
+        <p className="mt-1 text-2xl font-semibold tracking-tight">{value}</p>
+      </div>
       {hint && (
-        <p className={`mt-1 text-xs ${dark ? "text-white/60" : "text-neutral-400"}`}>{hint}</p>
+        <p className={`text-base ${dark ? "text-white/70" : "text-neutral-500"}`}>{hint}</p>
       )}
     </div>
   );
@@ -199,7 +214,7 @@ function Card({
       {title && (
         <div className="mb-5 flex items-baseline justify-between">
           <h2 className="text-base font-semibold text-neutral-900">{title}</h2>
-          {action && <span className="text-xs text-neutral-400">{action}</span>}
+          {action && <span className="text-base text-neutral-500">{action}</span>}
         </div>
       )}
       {children}
@@ -210,46 +225,117 @@ function Card({
 /* ---------------- ЭКРАН ---------------- */
 
 export default function App() {
+    const [avatars, setAvatars] = useState<Record<string, string>>({});
+  const [card, setCard] = useState<{ name: string; balance: number } | null>(null);
+  const fileRef = useRef<HTMLInputElement>(null);
+
+  function pickAvatar(id: string) {
+    setEditing(id);
+    fileRef.current?.click();
+  }
+
+  function onFile(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file || !editing) return;
+    const reader = new FileReader();
+    reader.onload = () => setAvatars((p) => ({ ...p, [editing]: reader.result as string }));
+    reader.readAsDataURL(file);
+    e.target.value = "";
+  }
   const daysLeft = 17;
   const forecastDate = "21 сентября";
 
   return (
     <div className="min-h-screen bg-[#EFEEEA] px-4 py-5 font-sans text-neutral-900 md:px-8 md:py-7">
-      <header className="mb-6 flex flex-col gap-4 md:mb-7 md:flex-row md:items-center md:justify-between">
-  <div className="flex flex-col gap-3">
-    <Logo />
-    <div>
-      <h1 className="text-lg font-medium tracking-tight text-neutral-700">Квартира на Мира, 19</h1>
-      <p className="mt-0.5 text-sm text-neutral-500">Сентябрь · 4 участника</p>
-    </div>
-  </div>
-  <div className="flex items-center gap-3">
-    <div className="flex -space-x-2">
-      {members.map((m) => (
-        <div
-          key={m.id}
-          title={m.name}
-          className="flex h-9 w-9 items-center justify-center rounded-full border-2 border-[#EFEEEA] text-xs font-semibold text-white"
-          style={{ background: m.color }}
-        >
-          {m.name[0]}
-        </div>
-      ))}
-    </div>
-    <button className="rounded-full bg-[#21A038] px-5 py-2.5 text-sm font-medium text-white transition hover:bg-[#1c8c30]">
-      Добавить трату
-    </button>
-  </div>
-</header>
+            <input
+        ref={fileRef}
+        type="file"
+        accept="image/*"
+        className="hidden"
+        onChange={onFile}
+      />
 
-      <div className="mb-4 grid grid-cols-2 gap-3 md:gap-5 lg:mb-5 lg:grid-cols-4">
+      <header className="mb-6 flex flex-col gap-4 md:mb-7 md:flex-row md:items-start md:justify-between">
+        <div className="flex flex-col gap-3">
+          <Logo />
+          <div>
+            <h1 className="text-lg font-medium tracking-tight text-neutral-700">
+              Квартира на Мира, 19
+            </h1>
+            <p className="mt-0.5 text-sm text-neutral-500">Сентябрь · 4 участника</p>
+          </div>
+        </div>
+
+        <div className="flex flex-col items-start gap-3 md:items-end">
+          <div className="flex items-center gap-4">
+            <div className="text-right">
+              <p className="text-xs text-neutral-500">
+                {myBalance < 0 ? "Ты должен" : "Тебе должны"}
+              </p>
+              <p
+                className={`text-xl font-semibold tracking-tight ${
+                  myBalance < 0 ? "text-red-600" : "text-[#1c8c30]"
+                }`}
+              >
+                {money(Math.abs(myBalance))}
+              </p>
+            </div>
+            <div className="flex -space-x-2">
+              {members.map((m) => (
+                <button
+                  key={m.id}
+                  title={`${m.name} — сменить аватар`}
+                  onClick={() => pickAvatar(m.id)}
+                  className="flex h-9 w-9 items-center justify-center overflow-hidden rounded-full border-2 border-[#EFEEEA] bg-cover bg-center text-xs font-semibold text-white transition hover:scale-110"
+                  style={
+                    avatars[m.id]
+                      ? { backgroundImage: `url(${avatars[m.id]})` }
+                      : { background: m.color }
+                  }
+                >
+                  {!avatars[m.id] && m.name[0]}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2">
+            {card ? (
+              <div className="flex items-center gap-3 rounded-full bg-white px-4 py-2">
+                <span className="h-2 w-2 rounded-full bg-[#21A038]" />
+                <div className="text-left">
+                  <p className="text-xs leading-tight text-neutral-400">{card.name}</p>
+                  <p className="text-sm font-semibold leading-tight">{money(card.balance)}</p>
+                </div>
+                <button
+                  onClick={() => setCard(null)}
+                  className="ml-1 text-xs text-neutral-400 hover:text-neutral-600"
+                >
+                  отвязать
+                </button>
+              </div>
+            ) : (
+              <button
+                onClick={() => setCard({ name: "СберКарта •••• 4417", balance: 42300 })}
+                className="rounded-full border border-neutral-300 px-4 py-2 text-sm font-medium text-neutral-700 transition hover:bg-white"
+              >
+                Привязать карту
+              </button>
+            )}
+            <button className="rounded-full bg-[#21A038] px-5 py-2.5 text-sm font-medium text-white transition hover:bg-[#1c8c30]">
+              Добавить трату
+            </button>
+          </div>
+        </div>
+      </header>
+
+      <div className="mb-4 grid grid-cols-1 gap-4 md:gap-5 lg:mb-5 lg:grid-cols-3">
         <Stat label="Общие траты в сентябре" value={money(71590)} hint="за 4 дня" />
-        <Stat label="Твоя доля" value={money(17898)} hint="25% от общих" />
         <Stat label="Незакрытых долгов" value="3" hint="на сумму 2 590 ₽" />
         <Stat
-          label={myBalance < 0 ? "Ты должен" : "Тебе должны"}
-          value={money(Math.abs(myBalance))}
-          hint="итог по всем участникам"
+          label="Бюджет на сентябрь"
+          value={money(budgetTotal)}
+          hint={`потрачено ${Math.round((budgetSpent / budgetTotal) * 100)}%`}
           dark
         />
       </div>
@@ -275,7 +361,17 @@ export default function App() {
                       <span className="text-sm font-medium">{s.to}</span>
                     </div>
                     <div className="flex items-center gap-4">
-                      <span className="text-sm font-semibold">{money(s.amount)}</span>
+                      <span
+                        className={`text-sm font-semibold ${
+                          s.from === ME
+                            ? "text-red-600"
+                            : s.to === ME
+                            ? "text-[#1c8c30]"
+                            : "text-neutral-500"
+                        }`}
+                      >
+                        {money(s.amount)}
+                      </span>
                       {s.from === ME ? (
                         <button className="rounded-full bg-[#21A038] px-4 py-1.5 text-xs font-medium text-white">
                           Перевести по СБП
@@ -295,7 +391,7 @@ export default function App() {
           </Card>
 
           <Card title="Общие траты по неделям" action="последние 8 недель">
-            <div className="h-56">
+            <div className="h-40">
               <ResponsiveContainer width="100%" height="100%">
                 <AreaChart data={weekly} margin={{ top: 5, right: 5, left: -20, bottom: 0 }}>
                   <defs>
@@ -317,7 +413,7 @@ export default function App() {
                     tickFormatter={(v) => v / 1000 + "к"}
                   />
                   <Tooltip
-                    formatter={(v: number) => money(v)}
+                    formatter={(v: number) => [money(v), "Потрачено"]}
                     contentStyle={{ borderRadius: 12, border: "none", fontSize: 13 }}
                   />
                   <Area type="monotone" dataKey="sum" stroke="#21A038" strokeWidth={2.5} fill="url(#g)" />
@@ -349,6 +445,45 @@ export default function App() {
               ))}
             </div>
           </Card>
+
+<Card title="Расходы по категориям" action="сентябрь">
+            <div className="h-52">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={categories} layout="vertical" margin={{ top: 0, right: 0, left: 0, bottom: 0 }}>
+                  <XAxis type="number" hide />
+                  <YAxis
+                    type="category"
+                    dataKey="name"
+                    tickLine={false}
+                    axisLine={false}
+                    width={92}
+                    interval={0}
+                    tick={{ fontSize: 12, fill: "#6b7280" }}
+                  />
+                  <Tooltip
+                    formatter={(v: number) => [money(v), "Сумма"]}
+                    contentStyle={{ borderRadius: 12, border: "none", fontSize: 13 }}
+                  />
+                  <Bar dataKey="sum" radius={[0, 6, 6, 0]} barSize={14}>
+                    {categories.map((c, i) => (
+                      <Cell key={i} fill={c.trend > 50 ? "#21A038" : "#CBE7D3"} />
+                    ))}
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+            <div className="mt-4 divide-y divide-neutral-100 border-t border-neutral-300">
+              {categories.map((c) => (
+                <div key={c.name} className="flex items-center justify-between py-2.5 text-sm">
+                  <span className="text-neutral-600">{c.name}</span>
+                  <div className="flex items-center gap-3">
+                    <span className="font-medium">{money(c.sum)}</span>
+                    <Badge value={c.trend} />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </Card>
         </div>
 
         <div className="space-y-5">
@@ -373,33 +508,74 @@ export default function App() {
               на {daysLeft} дней, с учётом подписок 15-го числа.
             </p>
           </div>
-
-          <Card title="Кто сколько внёс" action="сентябрь">
-            <div className="h-44">
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie data={byMember} dataKey="sum" nameKey="name" innerRadius={45} outerRadius={72} paddingAngle={2}>
-                    {byMember.map((m, i) => (
-                      <Cell key={i} fill={m.color} />
-                    ))}
-                  </Pie>
-                  <Tooltip
-                    formatter={(v: number) => money(v)}
-                    contentStyle={{ borderRadius: 12, border: "none", fontSize: 13 }}
-                  />
-                </PieChart>
-              </ResponsiveContainer>
+          <Card title="Общая цель" action={goal.deadline}>
+            <p className="text-sm font-medium">{goal.name}</p>
+            <div className="mt-3 flex items-baseline justify-between">
+              <p className="text-2xl font-semibold tracking-tight">{money(goal.saved)}</p>
+              <p className="text-2xl font-semibold tracking-tight text-neutral-400">
+                из {money(goal.target)}
+              </p>
             </div>
-            <div className="mt-3 space-y-2">
-              {byMember.map((m) => (
-                <div key={m.name} className="flex items-center justify-between text-sm">
-                  <div className="flex items-center gap-2">
-                    <span className="h-2.5 w-2.5 rounded-full" style={{ background: m.color }} />
-                    <span className="text-neutral-600">{m.name}</span>
-                  </div>
-                  <span className="font-medium">{money(m.sum)}</span>
+            <div className="mt-3 h-2 w-full overflow-hidden rounded-full bg-neutral-100">
+              <div
+                className="h-full rounded-full bg-[#21A038]"
+                style={{ width: `${(goal.saved / goal.target) * 100}%` }}
+              />
+            </div>
+            <p className="mt-3 text-sm leading-relaxed text-neutral-500">
+              Осталось {money(goal.target - goal.saved)} — это по{" "}
+              {money(Math.round((goal.target - goal.saved) / 4))} с каждого.
+            </p>
+            <button className="mt-4 w-full rounded-full bg-[#21A038] py-2.5 text-sm font-medium text-white transition hover:bg-[#1c8c30]">
+              Внести взнос
+            </button>
+          </Card>
+          <Card title="Кто сколько потратил" action="сентябрь">
+            <div className="flex items-center gap-4">
+              <div className="relative h-32 w-32 shrink-0">
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie data={spentByMember} dataKey="sum" nameKey="name" innerRadius={40} outerRadius={62} paddingAngle={2}>
+                      {spentByMember.map((m, i) => (
+                        <Cell key={i} fill={m.color} />
+                      ))}
+                    </Pie>
+                    <Tooltip
+                      formatter={(v: number) => money(v)}
+                      contentStyle={{ borderRadius: 12, border: "none", fontSize: 13 }}
+                    />
+                  </PieChart>
+                </ResponsiveContainer>
+                <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center">
+                  <p className="text-xl font-semibold tracking-tight">
+                    {Math.round(
+                      (spentByMember.find((m) => m.name === ME)!.sum /
+                        spentByMember.reduce((s, m) => s + m.sum, 0)) * 100
+                    )}
+                    %
+                  </p>
+                  <p className="text-[10px] text-neutral-400">твоя доля</p>
                 </div>
-              ))}
+              </div>
+
+              <div className="min-w-0 flex-1 space-y-2">
+                {spentByMember.map((m) => {
+                  const total = spentByMember.reduce((s, x) => s + x.sum, 0);
+                  const pct = Math.round((m.sum / total) * 100);
+                  return (
+                    <div key={m.name} className="flex items-center justify-between gap-2 text-sm">
+                      <div className="flex min-w-0 items-center gap-2">
+                        <span className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ background: m.color }} />
+                        <span className="truncate text-neutral-600">{m.name}</span>
+                      </div>
+                      <div className="flex shrink-0 items-center gap-2">
+                        <span className="text-xs font-medium">{money(m.sum)}</span>
+                        <span className="w-8 text-right text-xs text-neutral-400">{pct}%</span>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
             </div>
           </Card>
 
@@ -407,13 +583,15 @@ export default function App() {
   <div className="space-y-3">
     <div className="rounded-2xl bg-neutral-50 p-4">
       <p className="text-sm leading-relaxed">
-        Доставка выросла в 2,8 раза за две недели — 6 800 ₽ против средних 2 400 ₽.
+                Доставка выросла в 2,8 раза за две недели —
+                6&nbsp;800&nbsp;₽ против средних 2&nbsp;400&nbsp;₽.
         Почти всё по будням после 21:00.
       </p>
     </div>
     <div className="rounded-2xl bg-neutral-50 p-4">
       <p className="text-sm leading-relaxed">
-        Продукты покупаются мелкими партиями 4–6 раз в неделю, средний чек 1 100 ₽.
+                Продукты покупают мелкими партиями 4–6 раз в неделю, средний
+                чек&nbsp;1&nbsp;100&nbsp;₽.
       </p>
     </div>
     <div className="rounded-2xl bg-neutral-50 p-4">
@@ -448,43 +626,6 @@ export default function App() {
     </div>
   </div>
 </Card>
-          <Card title="По категориям" action="сентябрь">
-            <div className="h-40">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={categories} layout="vertical" margin={{ top: 0, right: 0, left: 0, bottom: 0 }}>
-                  <XAxis type="number" hide />
-                  <YAxis
-                    type="category"
-                    dataKey="name"
-                    tickLine={false}
-                    axisLine={false}
-                    width={80}
-                    tick={{ fontSize: 12, fill: "#6b7280" }}
-                  />
-                  <Tooltip
-                    formatter={(v: number) => money(v)}
-                    contentStyle={{ borderRadius: 12, border: "none", fontSize: 13 }}
-                  />
-                  <Bar dataKey="sum" radius={[0, 6, 6, 0]} barSize={14}>
-                    {categories.map((c, i) => (
-                      <Cell key={i} fill={c.trend > 50 ? "#21A038" : "#CBE7D3"} />
-                    ))}
-                  </Bar>
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
-            <div className="mt-4 space-y-2">
-              {categories.slice(0, 4).map((c) => (
-                <div key={c.name} className="flex items-center justify-between text-sm">
-                  <span className="text-neutral-600">{c.name}</span>
-                  <div className="flex items-center gap-3">
-                    <span className="font-medium">{money(c.sum)}</span>
-                    <Badge value={c.trend} />
-                  </div>
-                </div>
-              ))}
-            </div>
-          </Card>
         </div>
       </div>
     </div>
