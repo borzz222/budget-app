@@ -73,6 +73,68 @@ const budgetSpent = 71590;
 /* ---------------- МЕЛКИЕ КОМПОНЕНТЫ ---------------- */
 
 const money = (n: number) => n.toLocaleString("ru-RU") + " ₽";
+/* ---------------- ЛОГОТИПЫ ---------------- */
+
+// Вариант 1: круг, поделённый на доли
+function MarkPie() {
+  return (
+    <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none">
+      <path d="M12 2.5A9.5 9.5 0 0 1 21.5 12H12z" fill="white" />
+      <path d="M12 12h9.5A9.5 9.5 0 0 1 12 21.5z" fill="white" opacity="0.75" />
+      <path d="M12 12v9.5A9.5 9.5 0 0 1 2.5 12z" fill="white" opacity="0.5" />
+      <path d="M12 12H2.5A9.5 9.5 0 0 1 12 2.5z" fill="white" opacity="0.3" />
+    </svg>
+  );
+}
+
+// Вариант 2: две встречные стрелки
+function MarkArrows() {
+  return (
+    <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none">
+      <path
+        d="M3 8.5h13m0 0-3.5-3.5M16 8.5 12.5 12"
+        stroke="white"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M21 15.5H8m0 0 3.5-3.5M8 15.5l3.5 3.5"
+        stroke="white"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        opacity="0.7"
+      />
+    </svg>
+  );
+}
+
+// Вариант 3: знак равенства
+function MarkEqual() {
+  return (
+    <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none">
+      <rect x="4" y="8" width="16" height="3" rx="1.5" fill="white" />
+      <rect x="4" y="14" width="16" height="3" rx="1.5" fill="white" />
+    </svg>
+  );
+}
+
+function Logo() {
+  return (
+    <div className="flex items-center gap-3">
+      <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[#21A038]">
+        <MarkArrows />
+      </div>
+      <div>
+        <p className="text-lg font-semibold leading-tight tracking-tight">СберПоровну</p>
+        <p className="text-xs leading-tight text-neutral-400">
+          Прототип для экосистемы Сбера
+        </p>
+      </div>
+    </div>
+  );
+}
 
 function Badge({ value }: { value: number }) {
   if (value === 0) {
@@ -152,32 +214,35 @@ export default function App() {
   const forecastDate = "21 сентября";
 
   return (
-    <div className="min-h-screen bg-[#EFEEEA] px-8 py-7 font-sans text-neutral-900">
-      <header className="mb-7 flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-semibold tracking-tight">Квартира на Мира, 19</h1>
-          <p className="mt-1 text-sm text-neutral-500">Сентябрь · 4 участника</p>
+    <div className="min-h-screen bg-[#EFEEEA] px-4 py-5 font-sans text-neutral-900 md:px-8 md:py-7">
+      <header className="mb-6 flex flex-col gap-4 md:mb-7 md:flex-row md:items-center md:justify-between">
+  <div className="flex flex-col gap-3">
+    <Logo />
+    <div>
+      <h1 className="text-lg font-medium tracking-tight text-neutral-700">Квартира на Мира, 19</h1>
+      <p className="mt-0.5 text-sm text-neutral-500">Сентябрь · 4 участника</p>
+    </div>
+  </div>
+  <div className="flex items-center gap-3">
+    <div className="flex -space-x-2">
+      {members.map((m) => (
+        <div
+          key={m.id}
+          title={m.name}
+          className="flex h-9 w-9 items-center justify-center rounded-full border-2 border-[#EFEEEA] text-xs font-semibold text-white"
+          style={{ background: m.color }}
+        >
+          {m.name[0]}
         </div>
-        <div className="flex items-center gap-3">
-          <div className="flex -space-x-2">
-            {members.map((m) => (
-              <div
-                key={m.id}
-                title={m.name}
-                className="flex h-9 w-9 items-center justify-center rounded-full border-2 border-[#EFEEEA] text-xs font-semibold text-white"
-                style={{ background: m.color }}
-              >
-                {m.name[0]}
-              </div>
-            ))}
-          </div>
-          <button className="rounded-full bg-[#21A038] px-5 py-2.5 text-sm font-medium text-white transition hover:bg-[#1c8c30]">
-            Добавить трату
-          </button>
-        </div>
-      </header>
+      ))}
+    </div>
+    <button className="rounded-full bg-[#21A038] px-5 py-2.5 text-sm font-medium text-white transition hover:bg-[#1c8c30]">
+      Добавить трату
+    </button>
+  </div>
+</header>
 
-      <div className="mb-5 grid grid-cols-4 gap-5">
+      <div className="mb-4 grid grid-cols-2 gap-3 md:gap-5 lg:mb-5 lg:grid-cols-4">
         <Stat label="Общие траты в сентябре" value={money(71590)} hint="за 4 дня" />
         <Stat label="Твоя доля" value={money(17898)} hint="25% от общих" />
         <Stat label="Незакрытых долгов" value="3" hint="на сумму 2 590 ₽" />
@@ -189,8 +254,8 @@ export default function App() {
         />
       </div>
 
-      <div className="grid grid-cols-3 gap-5">
-        <div className="col-span-2 space-y-5">
+      <div className="grid grid-cols-1 gap-4 md:gap-5 lg:grid-cols-3">
+        <div className="space-y-4 md:space-y-5 lg:col-span-2">
           <Card title="Кто кому должен" action="минимум переводов">
             <div className="space-y-3">
               {settlements.map((s, i) => {
@@ -198,7 +263,7 @@ export default function App() {
                 return (
                   <div
                     key={i}
-                    className={`flex items-center justify-between rounded-2xl px-4 py-3 ${
+                    className={`flex flex-col gap-3 rounded-2xl px-4 py-3 sm:flex-row sm:items-center sm:justify-between ${
                       mine ? "bg-[#F1F8F3]" : "bg-neutral-50"
                     }`}
                   >
@@ -213,7 +278,7 @@ export default function App() {
                       <span className="text-sm font-semibold">{money(s.amount)}</span>
                       {s.from === ME ? (
                         <button className="rounded-full bg-[#21A038] px-4 py-1.5 text-xs font-medium text-white">
-                          Перевести
+                          Перевести по СБП
                         </button>
                       ) : s.to === ME ? (
                         <button className="rounded-full border border-neutral-200 px-4 py-1.5 text-xs font-medium text-neutral-700">
@@ -339,35 +404,50 @@ export default function App() {
           </Card>
 
           <Card title="Что заметил ассистент">
-            <div className="space-y-4">
-              <div className="rounded-2xl bg-[#F1F8F3] p-4">
-                <p className="text-sm leading-relaxed">
-                  Доставка выросла в 2,8 раза за две недели — 6 800 ₽ против средних 2 400 ₽. Почти
-                  всё по будням после 21:00.
-                </p>
-                <p className="mt-2 text-sm font-medium text-[#1c8c30]">
-                  Два домашних ужина в неделю вернут около 3 000 ₽ в месяц.
-                </p>
-              </div>
-              <div className="rounded-2xl bg-neutral-50 p-4">
-                <p className="text-sm leading-relaxed">
-                  Продукты покупаются мелкими партиями 4–6 раз в неделю, средний чек 1 100 ₽.
-                </p>
-                <p className="mt-2 text-sm font-medium text-[#1c8c30]">
-                  Одна закупка в неделю на всех сэкономит около 15% — примерно 2 700 ₽ в месяц.
-                </p>
-              </div>
-              <div className="rounded-2xl bg-neutral-50 p-4">
-                <p className="text-sm leading-relaxed">
-                  Аня платит за аренду четвёртый месяц подряд и ждёт возврата дольше остальных.
-                </p>
-                <p className="mt-2 text-sm font-medium text-[#1c8c30]">
-                  Стоит перевести ей 1 340 ₽ до выходных.
-                </p>
-              </div>
-            </div>
-          </Card>
+  <div className="space-y-3">
+    <div className="rounded-2xl bg-neutral-50 p-4">
+      <p className="text-sm leading-relaxed">
+        Доставка выросла в 2,8 раза за две недели — 6 800 ₽ против средних 2 400 ₽.
+        Почти всё по будням после 21:00.
+      </p>
+    </div>
+    <div className="rounded-2xl bg-neutral-50 p-4">
+      <p className="text-sm leading-relaxed">
+        Продукты покупаются мелкими партиями 4–6 раз в неделю, средний чек 1 100 ₽.
+      </p>
+    </div>
+    <div className="rounded-2xl bg-neutral-50 p-4">
+      <p className="text-sm leading-relaxed">
+        Аня платит за аренду четвёртый месяц подряд и ждёт возврата дольше остальных.
+      </p>
+    </div>
+  </div>
+</Card>
 
+<Card title="Как сэкономить" action="до 5 700 ₽ в месяц">
+  <div className="space-y-3">
+    <div className="rounded-2xl bg-[#F1F8F3] p-4">
+      <p className="text-sm leading-relaxed">
+        Два домашних ужина в неделю вместо доставки.
+      </p>
+      <p className="mt-1.5 text-sm font-semibold text-[#1c8c30]">около 3 000 ₽ в месяц</p>
+    </div>
+    <div className="rounded-2xl bg-[#F1F8F3] p-4">
+      <p className="text-sm leading-relaxed">
+        Одна общая закупка продуктов в неделю вместо мелких походов.
+      </p>
+      <p className="mt-1.5 text-sm font-semibold text-[#1c8c30]">
+        около 2 700 ₽ в месяц, это 15%
+      </p>
+    </div>
+    <div className="rounded-2xl bg-[#F1F8F3] p-4">
+      <p className="text-sm leading-relaxed">
+        Перевести Ане 1 340 ₽ до выходных, чтобы закрыть долг за аренду.
+      </p>
+      <p className="mt-1.5 text-sm font-semibold text-[#1c8c30]">снимет напряжение</p>
+    </div>
+  </div>
+</Card>
           <Card title="По категориям" action="сентябрь">
             <div className="h-40">
               <ResponsiveContainer width="100%" height="100%">
@@ -378,7 +458,7 @@ export default function App() {
                     dataKey="name"
                     tickLine={false}
                     axisLine={false}
-                    width={92}
+                    width={80}
                     tick={{ fontSize: 12, fill: "#6b7280" }}
                   />
                   <Tooltip
