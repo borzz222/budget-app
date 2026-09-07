@@ -65,7 +65,7 @@ export function Toaster() {
         <button
           key={t.id}
           onClick={() => dismiss(t.id)}
-          className={`pointer-events-auto flex items-start gap-3 rounded-2xl border bg-[var(--overlay)] p-4 text-left shadow-[var(--shadow-pop)] backdrop-blur-xl transition hover:bg-[var(--surface-3)] ${
+          className={`pointer-events-auto flex items-start gap-3 rounded-2xl border bg-white dark:bg-[#0D1A14] p-4 text-left shadow-[var(--shadow-pop)] [transform:translateZ(0)] transition hover:bg-[var(--surface-3)] ${
             t.kind === "success" ? "border-[var(--accent-border)]/50" : "border-[var(--danger)]/45"
           }`}
         >

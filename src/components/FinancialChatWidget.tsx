@@ -84,7 +84,7 @@ export default function FinancialChatWidget() {
       )}
 
       {open && (
-        <div className="fixed bottom-5 right-5 z-40 flex h-[500px] max-h-[70vh] w-[370px] max-w-[calc(100vw-2rem)] flex-col overflow-hidden rounded-3xl border border-[var(--border-strong)] bg-[var(--overlay)] shadow-[var(--shadow-pop)] backdrop-blur-2xl">
+        <div className="fixed bottom-5 right-5 z-40 flex h-[500px] max-h-[70vh] w-[370px] max-w-[calc(100vw-2rem)] flex-col overflow-hidden rounded-3xl border border-[var(--border-strong)] bg-white dark:bg-[#0D1A14] shadow-[var(--shadow-pop)] [transform:translateZ(0)]">
           <div className="flex items-center justify-between bg-gradient-to-r from-[#0F3D2E] to-[#12603F] px-5 py-3.5 text-white">
             <p className="text-sm font-semibold">Финансовый консультант</p>
             <button
@@ -96,10 +96,10 @@ export default function FinancialChatWidget() {
             </button>
           </div>
 
-          <div ref={scrollRef} className="flex-1 space-y-3 overflow-y-auto bg-[var(--surface-2)] p-4">
+          <div ref={scrollRef} className="flex-1 space-y-3 overflow-y-auto overflow-x-hidden bg-[var(--surface-2)] p-4">
             {history.length === 0 && !busy && (
               <div className="max-w-[85%] rounded-2xl rounded-tl-md border border-[var(--border)] bg-[var(--surface-3)] p-3">
-                <p className="text-sm leading-relaxed text-[var(--text)]">
+                <p className="break-words text-sm leading-relaxed text-[var(--text)]">
                   Привет! Я ваш финансовый консультант. Спросите меня о ваших
                   тратах, доходах или как сэкономить.
                 </p>
@@ -109,13 +109,13 @@ export default function FinancialChatWidget() {
             {history.map((m, i) => (
               <div key={i} className={`flex ${m.role === "user" ? "justify-end" : "justify-start"}`}>
                 <div
-                  className={`max-w-[85%] rounded-2xl p-3 shadow-sm ${
+                  className={`min-w-0 max-w-[85%] overflow-hidden rounded-2xl p-3 shadow-sm ${
                     m.role === "user"
                       ? "rounded-br-md bg-[var(--accent-border)] dark:bg-gradient-to-br dark:from-[#A8CF38] dark:to-[#21A038] text-white font-medium dark:text-[#050D0A]"
                       : "rounded-tl-md border border-[var(--border)] bg-[var(--field)] text-[var(--text)]"
                   }`}
                 >
-                  <p className="whitespace-pre-wrap text-sm leading-relaxed">{m.content}</p>
+                  <p className="whitespace-pre-wrap break-words text-sm leading-relaxed">{m.content}</p>
                 </div>
               </div>
             ))}

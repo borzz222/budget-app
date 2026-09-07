@@ -1,5 +1,4 @@
 import { useState, useRef, useEffect } from "react";
-import sberLogo from "./assets/sber-logo.png";
 import {
   AreaChart,
   Area,
@@ -146,11 +145,14 @@ function ThemeToggle({
 function Logo() {
   return (
     <div className="flex items-center gap-3">
-      <img
-        src={sberLogo}
-        alt="Сбер"
-        className="h-11 w-11 shrink-0"
-      />
+      <div className="relative flex h-11 w-11 items-center justify-center rounded-2xl bg-[var(--accent-border)] dark:bg-gradient-to-br dark:from-[#A8CF38] dark:via-[#3FC8A0] dark:to-[#21A038]">
+        <div className="absolute inset-0 hidden rounded-2xl bg-[#A8CF38] opacity-60 blur-lg dark:block" />
+        <svg viewBox="0 0 24 24" className="relative h-6 w-6" fill="none">
+          <path d="M4 9h16M4 15h16" stroke="#FFFFFF" strokeWidth="2.5" className="dark:stroke-[#071410]" strokeLinecap="round" />
+          <circle cx="8" cy="9" r="2.5" fill="#FFFFFF" className="dark:fill-[#071410]" />
+          <circle cx="16" cy="15" r="2.5" fill="#FFFFFF" className="dark:fill-[#071410]" />
+        </svg>
+      </div>
       <div>
         <p className="text-xl font-bold leading-tight tracking-tight text-[var(--text)]">
           FinBalance
@@ -406,7 +408,7 @@ export default function App() {
   const forecastDate = "21 сентября";
 
   return (
-    <div className="min-h-screen relative isolate bg-[var(--bg)] px-5 py-10 font-sans text-[var(--text)] md:px-8 md:py-14">
+    <div className="relative isolate min-h-screen overflow-x-hidden bg-[var(--bg)] px-5 py-10 font-sans text-[var(--text)] md:px-8 md:py-14">
       {/* ambient glow */}
       <div className="pointer-events-none fixed inset-0 z-0 hidden overflow-hidden dark:block">
         <div className="absolute -right-40 -top-48 h-[38rem] w-[38rem] rounded-full bg-[var(--glow-1)] blur-[130px]" />
@@ -505,7 +507,7 @@ export default function App() {
         </div>
       </header>
 
-      <div className="mb-8 grid grid-cols-1 gap-6 lg:mb-10 lg:grid-cols-2">
+      <div className="mb-8 grid grid-cols-1 items-start gap-6 lg:mb-10 lg:grid-cols-2">
         <div className="rounded-[var(--radius-card)] border border-[var(--border)] bg-[var(--surface)] p-7 shadow-[var(--shadow-card)] transition-all duration-200 ease-in-out md:p-8 dark:backdrop-blur-2xl">
           <UploadForm onUploaded={handleUploaded} />
           <ReceiptUploader statementId={currentId} onConfirmed={handleConfirmed} />
@@ -532,7 +534,7 @@ export default function App() {
         </div>
       </div>
 
-      <div className="mb-8 grid grid-cols-1 gap-6 lg:mb-10 lg:grid-cols-3">
+      <div className="mb-8 grid grid-cols-1 items-start gap-6 lg:mb-10 lg:grid-cols-3">
         <Stat
           label="Баланс выписки"
           value={stats ? money(stats.balance) : "—"}
@@ -547,7 +549,7 @@ export default function App() {
         />
       </div>
 
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+      <div className="grid grid-cols-1 items-start gap-6 lg:grid-cols-3">
         <div className="space-y-6 lg:col-span-2">
           {SHOW_LEGACY_WIDGETS && (
             <Card title="Кто кому должен" action="минимум переводов">
@@ -633,6 +635,7 @@ export default function App() {
                     tickFormatter={(v) => v / 1000 + "к"}
                   />
                   <Tooltip
+                    cursor={{ stroke: "var(--chart-line)", strokeWidth: 1, strokeDasharray: "4 4" }}
                     formatter={(v) => [money(Number(v ?? 0)), "Потрачено"]}
                     contentStyle={tooltipStyle}
                   />
@@ -662,6 +665,7 @@ export default function App() {
                     tick={axisTick}
                   />
                   <Tooltip
+                    cursor={{ fill: "var(--surface-3)" }}
                     formatter={(v) => [money(Number(v ?? 0)), "Сумма"]}
                     contentStyle={tooltipStyle}
                   />
