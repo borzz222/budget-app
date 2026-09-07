@@ -408,14 +408,14 @@ export default function App() {
   const forecastDate = "21 сентября";
 
   return (
-    <div className="min-h-screen relative isolate bg-[var(--bg)] px-5 py-8 font-sans text-[var(--text)] md:px-10 md:py-12 lg:px-14">
+    <div className="min-h-screen relative isolate bg-[var(--bg)] px-5 py-10 font-sans text-[var(--text)] md:px-8 md:py-14">
       {/* ambient glow */}
       <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
         <div className="absolute -right-40 -top-48 h-[38rem] w-[38rem] rounded-full bg-[var(--glow-1)] blur-[130px]" />
         <div className="absolute -left-48 top-1/3 h-[34rem] w-[34rem] rounded-full bg-[var(--glow-2)] blur-[150px]" />
         <div className="absolute -bottom-40 left-1/2 h-[30rem] w-[44rem] -translate-x-1/2 rounded-full bg-[var(--glow-3)] blur-[140px]" />
       </div>
-      <div className="relative z-10">
+      <div className="relative z-10 mx-auto w-full max-w-[1180px]">
       <Toaster />
       <FinancialChatWidget />
             <input
@@ -426,7 +426,7 @@ export default function App() {
         onChange={onFile}
       />
 
-      <header className="mb-10 flex flex-col gap-5 md:mb-12 md:flex-row md:items-start md:justify-between">
+      <header className="mb-14 flex flex-col gap-5 md:mb-16 md:flex-row md:items-start md:justify-between">
         <div className="flex flex-col gap-3">
           <Logo />
           <div>
@@ -507,7 +507,7 @@ export default function App() {
         </div>
       </header>
 
-      <div className="mb-6 grid grid-cols-1 gap-6 md:gap-7 lg:mb-8 lg:grid-cols-2">
+      <div className="mb-8 grid grid-cols-1 gap-6 lg:mb-10 lg:grid-cols-2">
         <div className="rounded-3xl border border-[var(--border)] bg-[var(--surface)] p-7 shadow-[var(--shadow-card)] md:p-8 backdrop-blur-2xl">
           <UploadForm onUploaded={handleUploaded} />
           <ReceiptUploader statementId={currentId} onConfirmed={handleConfirmed} />
@@ -534,7 +534,7 @@ export default function App() {
         </div>
       </div>
 
-      <div className="mb-6 grid grid-cols-1 gap-6 md:gap-7 lg:mb-8 lg:grid-cols-3">
+      <div className="mb-8 grid grid-cols-1 gap-6 lg:mb-10 lg:grid-cols-3">
         <Stat
           label="Баланс выписки"
           value={stats ? money(stats.balance) : "—"}
@@ -549,8 +549,8 @@ export default function App() {
         />
       </div>
 
-      <div className="grid grid-cols-1 gap-6 md:gap-7 lg:grid-cols-3">
-        <div className="space-y-6 md:space-y-7 lg:col-span-2">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+        <div className="space-y-6 lg:col-span-2">
           {SHOW_LEGACY_WIDGETS && (
             <Card title="Кто кому должен" action="минимум переводов">
             <div className="space-y-3.5">
@@ -689,7 +689,7 @@ export default function App() {
           </Card>
         </div>
 
-        <div className="space-y-6 md:space-y-7">
+        <div className="space-y-6">
           {SHOW_LEGACY_WIDGETS && (
             <div className="rounded-3xl bg-[#0F3D2E] p-7 text-white md:p-8">
             <p className="text-sm text-white/70">Бюджет закончится</p>
