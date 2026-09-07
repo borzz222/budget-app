@@ -3,52 +3,56 @@
 /* Тёмная тема включается классом .dark на <html> */
 @custom-variant dark (&:where(.dark, .dark *));
 
-/* ─────────── СВЕТЛАЯ ТЕМА ─────────── */
+/* ─────────── СВЕТЛАЯ ТЕМА — палитра Сбера ─────────── */
 :root {
-  --bg: #f1f4f1;
+  --bg: #f4f7f4;
 
-  --surface: rgb(255 255 255 / 0.8);
-  --surface-2: rgb(10 22 17 / 0.025);
-  --surface-3: rgb(10 22 17 / 0.045);
-  --overlay: rgb(255 255 255 / 0.95);
+  --surface: #ffffff;
+  --surface-2: #f4f7f4;
+  --surface-3: #eef8f2;
+  --overlay: #ffffff;
   --field: #ffffff;
 
-  --border: rgb(10 22 17 / 0.08);
-  --border-strong: rgb(10 22 17 / 0.12);
-  --border-soft: rgb(10 22 17 / 0.05);
+  --border: #e1e9e4;
+  --border-strong: #d3ded7;
+  --border-soft: #edf2ef;
 
-  --text: #0a1611;
-  --text-2: #2f4038;
-  --text-3: #5a6b62;
-  --text-4: #8a9a92;
+  --text: #17231d;
+  --text-2: #3d4c45;
+  --text-3: #708078;
+  --text-4: #94a29a;
 
-  --accent: #12864f;
-  --accent-border: #21a038;
-  --danger: #dc2626;
-  --danger-soft: rgb(220 38 38 / 0.1);
-  --accent-soft: rgb(18 134 79 / 0.12);
-  --warn-text: #5f7a16;
-  --warn-soft: rgb(168 207 56 / 0.16);
-  --warn-border: rgb(168 207 56 / 0.45);
-  --info-soft: rgb(14 165 233 / 0.1);
-  --info-text: #0369a1;
+  --accent: #21a366;
+  --accent-border: #21a366;
+  --danger: #e5484d;
+  --danger-soft: #fdecec;
+  --accent-soft: #dff4e8;
+  --warn-text: #9a6700;
+  --warn-soft: #fff6dd;
+  --warn-border: #f0dfae;
+  --info-soft: #e6f1fb;
+  --info-text: #1f6fb2;
 
-  --chart-axis: #8a9a92;
-  --chart-axis-strong: #5a6b62;
-  --chart-line: #21a038;
-  --chart-fill-opacity: 0.28;
+  --chart-axis: #94a29a;
+  --chart-axis-strong: #708078;
+  --chart-line: #21a366;
+  --chart-fill-opacity: 0.15;
 
-  --shadow-card: 0 1px 3px rgb(10 22 17 / 0.04);
-  --shadow-pop: 0 20px 60px -20px rgb(10 22 17 / 0.25);
+  --radius-card: 20px;
+  --shadow-card: 0 4px 20px rgb(23 35 29 / 0.04);
+  --shadow-card-hover: 0 8px 28px rgb(23 35 29 / 0.08);
+  --shadow-btn: 0 4px 14px rgb(33 163 102 / 0.25);
+  --shadow-pop: 0 12px 40px rgb(23 35 29 / 0.10);
 
-  --glow-1: rgb(168 207 56 / 0.28);
-  --glow-2: rgb(63 200 160 / 0.2);
-  --glow-3: rgb(33 160 56 / 0.1);
+  /* в светлой теме фон ровный, без подсветки */
+  --glow-1: transparent;
+  --glow-2: transparent;
+  --glow-3: transparent;
 
   color-scheme: light;
 }
 
-/* ─────────── ТЁМНАЯ ТЕМА ─────────── */
+/* ─────────── ТЁМНАЯ ТЕМА — без изменений ─────────── */
 .dark {
   --bg: #050d0a;
 
@@ -83,7 +87,10 @@
   --chart-line: #a8cf38;
   --chart-fill-opacity: 0.45;
 
+  --radius-card: 24px;
   --shadow-card: none;
+  --shadow-card-hover: none;
+  --shadow-btn: 0 0 28px -8px #21a038;
   --shadow-pop: 0 20px 60px -20px rgb(0 0 0 / 0.7);
 
   --glow-1: rgb(33 160 56 / 0.2);

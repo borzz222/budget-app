@@ -44,7 +44,7 @@ export default function UploadForm({
         <button
           onClick={submit}
           disabled={!file || busy}
-          className="shrink-0 rounded-full bg-gradient-to-r from-[#A8CF38] to-[#21A038] px-5 py-2.5 text-sm font-semibold text-[#050D0A] shadow-[0_0_28px_-8px_#21A038] transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-40 disabled:shadow-none"
+          className="shrink-0 rounded-full bg-[var(--accent-border)] dark:bg-gradient-to-r dark:from-[#A8CF38] dark:to-[#21A038] px-5 py-2.5 text-sm font-semibold text-white dark:text-[#050D0A] shadow-[var(--shadow-btn)] transition-all duration-200 ease-in-out hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-40 disabled:shadow-none"
         >
           {busy ? "Загрузка…" : "Загрузить выписку"}
         </button>

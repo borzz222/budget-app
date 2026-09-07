@@ -170,7 +170,7 @@ export default function ManualTransactionForm({
         <button
           onClick={save}
           disabled={busy}
-          className="flex-1 py-2 text-sm rounded-full bg-gradient-to-r from-[#A8CF38] to-[#21A038] text-[#050D0A] font-semibold shadow-[0_0_28px_-8px_#21A038] transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-40 disabled:shadow-none"
+          className="flex-1 py-2 text-sm rounded-full bg-[var(--accent-border)] dark:bg-gradient-to-r dark:from-[#A8CF38] dark:to-[#21A038] text-[#050D0A] font-semibold shadow-[0_0_28px_-8px_#21A038] transition-all duration-200 ease-in-out hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-40 disabled:shadow-none"
         >
           {busy ? "Сохраняем…" : "Сохранить"}
         </button>

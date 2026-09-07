@@ -130,7 +130,7 @@ export default function TransactionsTable({
 
   if (statementId == null) {
     return (
-      <div className="rounded-3xl border border-[var(--border)] bg-[var(--surface)] p-6 shadow-[var(--shadow-card)] backdrop-blur-2xl">
+      <div className="rounded-[var(--radius-card)] border border-[var(--border)] bg-[var(--surface)] p-6 shadow-[var(--shadow-card)] transition-all duration-200 ease-in-out dark:backdrop-blur-2xl">
         <h2 className="text-base font-semibold text-[var(--text)]">Транзакции</h2>
         <p className="mt-2 text-sm text-[var(--text-4)]">Выберите выписку, чтобы увидеть транзакции</p>
       </div>
@@ -141,7 +141,7 @@ export default function TransactionsTable({
   const currentPage = meta?.current_page ?? page;
 
   return (
-    <div className="rounded-3xl border border-[var(--border)] bg-[var(--surface)] p-6 shadow-[var(--shadow-card)] backdrop-blur-2xl">
+    <div className="rounded-[var(--radius-card)] border border-[var(--border)] bg-[var(--surface)] p-6 shadow-[var(--shadow-card)] transition-all duration-200 ease-in-out dark:backdrop-blur-2xl">
       <div className="mb-5 flex items-baseline justify-between">
         <h2 className="text-base font-semibold text-[var(--text)]">Транзакции</h2>
         {meta && <span className="text-base text-[var(--text-3)]">всего {meta.total}</span>}

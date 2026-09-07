@@ -92,14 +92,14 @@ const xTickInterval = (length: number) =>
 const INSIGHT_ACCENT: Record<string, { dot: string; text: string }> = {
   аномалия: { dot: "bg-orange-500", text: "text-orange-700" },
   подписка: { dot: "bg-sky-500", text: "text-sky-700" },
-  рост_расходов: { dot: "bg-[var(--danger)]/080", text: "text-[var(--danger)]" },
-  главная_категория: { dot: "bg-[#21A038]", text: "text-[var(--accent)]" },
-  временной_паттерн: { dot: "bg-violet-500", text: "text-violet-700" },
+  рост_расходов: { dot: "bg-[var(--danger)]", text: "text-[var(--danger)]" },
+  главная_категория: { dot: "bg-[var(--accent-border)]", text: "text-[var(--accent)]" },
+  временной_паттерн: { dot: "bg-violet-500", text: "text-violet-600 dark:text-violet-300" },
 };
 
 const PRIORITY_STYLE: Record<string, { badge: string; amount: string }> = {
-  high: { badge: "bg-[var(--danger)]/08 text-[var(--danger)]", amount: "text-[var(--danger)]" },
-  medium: { badge: "bg-amber-50 text-amber-700", amount: "text-[var(--text)]" },
+  high: { badge: "bg-[var(--danger-soft)] text-[var(--danger)]", amount: "text-[var(--danger)]" },
+  medium: { badge: "bg-[var(--warn-soft)] text-[var(--warn-text)]", amount: "text-[var(--text)]" },
   low: { badge: "bg-[var(--surface-3)] text-[var(--text-3)]", amount: "text-[var(--text-3)]" },
 };
 /* ---------------- ЛОГОТИПЫ ---------------- */
@@ -145,12 +145,12 @@ function ThemeToggle({
 function Logo() {
   return (
     <div className="flex items-center gap-3">
-      <div className="relative flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-[#A8CF38] via-[#3FC8A0] to-[#21A038]">
-        <div className="absolute inset-0 rounded-2xl bg-[#A8CF38] opacity-70 blur-lg" />
+      <div className="relative flex h-11 w-11 items-center justify-center rounded-2xl bg-[var(--accent-border)] dark:bg-gradient-to-br dark:from-[#A8CF38] dark:via-[#3FC8A0] dark:to-[#21A038]">
+        <div className="absolute inset-0 hidden rounded-2xl bg-[#A8CF38] opacity-60 blur-lg dark:block" />
         <svg viewBox="0 0 24 24" className="relative h-6 w-6" fill="none">
-          <path d="M4 9h16M4 15h16" stroke="#071410" strokeWidth="2.5" strokeLinecap="round" />
-          <circle cx="8" cy="9" r="2.5" fill="#071410" />
-          <circle cx="16" cy="15" r="2.5" fill="#071410" />
+          <path d="M4 9h16M4 15h16" stroke="#FFFFFF" strokeWidth="2.5" className="dark:stroke-[#071410]" strokeLinecap="round" />
+          <circle cx="8" cy="9" r="2.5" fill="#FFFFFF" className="dark:fill-[#071410]" />
+          <circle cx="16" cy="15" r="2.5" fill="#FFFFFF" className="dark:fill-[#071410]" />
         </svg>
       </div>
       <div>
@@ -175,7 +175,7 @@ function Badge({ value }: { value: number }) {
   return (
     <span
       className={`rounded-full px-2 py-0.5 text-xs font-medium ${
-        up ? "bg-[var(--danger)]/08 text-[var(--danger)]" : "bg-[#3FC8A0]/10 text-[var(--accent)]"
+        up ? "bg-[var(--danger-soft)] text-[var(--danger)]" : "bg-[var(--accent-soft)] text-[var(--accent)]"
       }`}
     >
       {up ? "+" : ""}
@@ -197,20 +197,20 @@ function Stat({
 }) {
   return (
     <div
-      className={`flex items-baseline justify-between gap-3 rounded-3xl px-6 py-6 backdrop-blur-2xl ${
+      className={`flex items-baseline justify-between gap-3 rounded-[var(--radius-card)] border border-[var(--border)] bg-[var(--surface)] px-6 py-6 shadow-[var(--shadow-card)] transition-all duration-200 ease-in-out hover:-translate-y-0.5 hover:border-[var(--accent-border)]/40 hover:shadow-[var(--shadow-card-hover)] ${
         dark
-          ? "bg-gradient-to-br from-[#A8CF38] via-[#3FC8A0] to-[#21A038] text-[#050D0A]"
-          : "border border-[var(--border)] bg-[var(--surface)]"
+          ? "dark:border-transparent dark:bg-gradient-to-br dark:from-[#A8CF38] dark:via-[#3FC8A0] dark:to-[#21A038] dark:text-[#050D0A] dark:hover:border-transparent"
+          : ""
       }`}
     >
       <div>
-        <p className={`text-sm font-medium ${dark ? "text-[#0A1F14]/70" : "text-[var(--text-3)]"}`}>{label}</p>
-        <p className={`mt-1 text-3xl font-bold tracking-tight ${dark ? "text-[#050D0A]" : "text-[var(--text)]"}`}>
+        <p className={`text-sm font-medium text-[var(--text-3)] ${dark ? "dark:text-[#0A1F14]/70" : ""}`}>{label}</p>
+        <p className={`mt-1 text-3xl font-bold tracking-tight ${dark ? "text-[var(--accent)] dark:text-[#050D0A]" : "text-[var(--text)]"}`}>
           {value}
         </p>
       </div>
       {hint && (
-        <p className={`text-sm ${dark ? "text-[#0A1F14]/60" : "text-[var(--text-4)]"}`}>{hint}</p>
+        <p className={`text-sm text-[var(--text-4)] ${dark ? "dark:text-[#0A1F14]/60" : ""}`}>{hint}</p>
       )}
     </div>
   );
@@ -228,7 +228,7 @@ function Card({
   className?: string;
 }) {
   return (
-    <div className={`rounded-3xl border border-[var(--border)] bg-[var(--surface)] p-7 shadow-[var(--shadow-card)] md:p-8 backdrop-blur-2xl ${className}`}>
+    <div className={`rounded-[var(--radius-card)] border border-[var(--border)] bg-[var(--surface)] p-7 shadow-[var(--shadow-card)] transition-all duration-200 ease-in-out md:p-8 dark:backdrop-blur-2xl ${className}`}>
       {title && (
         <div className="mb-6 flex items-baseline justify-between">
           <h2 className="text-base font-semibold text-[var(--text)]">{title}</h2>
@@ -410,7 +410,7 @@ export default function App() {
   return (
     <div className="min-h-screen relative isolate bg-[var(--bg)] px-5 py-10 font-sans text-[var(--text)] md:px-8 md:py-14">
       {/* ambient glow */}
-      <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
+      <div className="pointer-events-none fixed inset-0 z-0 hidden overflow-hidden dark:block">
         <div className="absolute -right-40 -top-48 h-[38rem] w-[38rem] rounded-full bg-[var(--glow-1)] blur-[130px]" />
         <div className="absolute -left-48 top-1/3 h-[34rem] w-[34rem] rounded-full bg-[var(--glow-2)] blur-[150px]" />
         <div className="absolute -bottom-40 left-1/2 h-[30rem] w-[44rem] -translate-x-1/2 rounded-full bg-[var(--glow-3)] blur-[140px]" />
@@ -499,7 +499,7 @@ export default function App() {
               ))}
             <button
               disabled
-              className="cursor-not-allowed rounded-full bg-gradient-to-r from-[#A8CF38] to-[#21A038] px-5 py-2.5 text-sm font-semibold text-[#050D0A] opacity-50"
+              className="cursor-not-allowed rounded-full bg-[var(--accent-border)] dark:bg-gradient-to-r dark:from-[#A8CF38] dark:to-[#21A038] px-5 py-2.5 text-sm font-semibold text-white dark:text-[#050D0A] opacity-50"
             >
               Добавить трату
             </button>
@@ -508,14 +508,14 @@ export default function App() {
       </header>
 
       <div className="mb-8 grid grid-cols-1 gap-6 lg:mb-10 lg:grid-cols-2">
-        <div className="rounded-3xl border border-[var(--border)] bg-[var(--surface)] p-7 shadow-[var(--shadow-card)] md:p-8 backdrop-blur-2xl">
+        <div className="rounded-[var(--radius-card)] border border-[var(--border)] bg-[var(--surface)] p-7 shadow-[var(--shadow-card)] transition-all duration-200 ease-in-out md:p-8 dark:backdrop-blur-2xl">
           <UploadForm onUploaded={handleUploaded} />
           <ReceiptUploader statementId={currentId} onConfirmed={handleConfirmed} />
           <div className="mt-4 border-t border-[var(--border-strong)] pt-4">
             <ManualTransactionForm statementId={currentId} onSaved={handleConfirmed} />
           </div>
         </div>
-        <div className="rounded-3xl border border-[var(--border)] bg-[var(--surface)] p-7 shadow-[var(--shadow-card)] md:p-8 backdrop-blur-2xl">
+        <div className="rounded-[var(--radius-card)] border border-[var(--border)] bg-[var(--surface)] p-7 shadow-[var(--shadow-card)] transition-all duration-200 ease-in-out md:p-8 dark:backdrop-blur-2xl">
           <StatementSelector
             statements={statements}
             currentId={currentId}
@@ -560,7 +560,7 @@ export default function App() {
                   <div
                     key={i}
                     className={`flex flex-col gap-3 rounded-2xl px-5 py-4 sm:flex-row sm:items-center sm:justify-between ${
-                      mine ? "border border-[var(--accent-border)]/40 bg-[var(--accent-soft)]" : "border border-[var(--border-soft)] bg-[var(--surface-2)]"
+                      mine ? "bg-[var(--accent-soft)]" : "bg-[var(--surface-2)]"
                     }`}
                   >
                     <div className="flex items-center gap-3">
@@ -585,7 +585,7 @@ export default function App() {
                       {s.from === ME ? (
                         <button
                           disabled
-                          className="cursor-not-allowed rounded-full bg-gradient-to-r from-[#A8CF38] to-[#21A038] px-4 py-1.5 text-xs font-semibold text-[#050D0A] opacity-50"
+                          className="cursor-not-allowed rounded-full bg-[var(--accent-border)] dark:bg-gradient-to-r dark:from-[#A8CF38] dark:to-[#21A038] px-4 py-1.5 text-xs font-semibold text-white dark:text-[#050D0A] opacity-50"
                         >
                           Перевести по СБП
                         </button>
@@ -616,8 +616,8 @@ export default function App() {
                 <AreaChart data={chartWeekly} margin={{ top: 5, right: 5, left: -20, bottom: 0 }}>
                   <defs>
                     <linearGradient id="g" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="var(--chart-line)" stopOpacity={0.4} />
-                      <stop offset="100%" stopColor="#3FC8A0" stopOpacity={0} />
+                      <stop offset="0%" stopColor="var(--chart-line)" stopOpacity="var(--chart-fill-opacity)" />
+                      <stop offset="100%" stopColor="var(--chart-line)" stopOpacity={0} />
                     </linearGradient>
                   </defs>
                   <XAxis
@@ -698,7 +698,7 @@ export default function App() {
 
             <div className="mt-5 h-2 w-full overflow-hidden rounded-full bg-white/10">
               <div
-                className="h-full rounded-full bg-[#3FC8A0]"
+                className="h-full rounded-full bg-[var(--accent-border)]"
                 style={{ width: `${(budgetSpent / budgetTotal) * 100}%` }}
               />
             </div>
@@ -724,7 +724,7 @@ export default function App() {
             </div>
             <div className="mt-3 h-2 w-full overflow-hidden rounded-full bg-[var(--surface-3)]">
               <div
-                className="h-full rounded-full bg-gradient-to-r from-[#A8CF38] to-[#3FC8A0]"
+                className="h-full rounded-full bg-[var(--accent-border)] dark:bg-gradient-to-r dark:from-[#A8CF38] dark:to-[#3FC8A0]"
                 style={{ width: `${(goal.saved / goal.target) * 100}%` }}
               />
             </div>
@@ -734,7 +734,7 @@ export default function App() {
             </p>
             <button
               disabled
-              className="mt-4 w-full cursor-not-allowed rounded-full bg-gradient-to-r from-[#A8CF38] to-[#21A038] py-2.5 text-sm font-semibold text-[#050D0A] opacity-50"
+              className="mt-4 w-full cursor-not-allowed rounded-full bg-[var(--accent-border)] dark:bg-gradient-to-r dark:from-[#A8CF38] dark:to-[#21A038] py-2.5 text-sm font-semibold text-white dark:text-[#050D0A] opacity-50"
             >
               Внести взнос
             </button>
@@ -811,7 +811,7 @@ export default function App() {
             <button
               onClick={runAnalysis}
               disabled={currentId == null}
-              className="w-full rounded-full bg-gradient-to-r from-[#A8CF38] to-[#21A038] py-2.5 text-sm font-semibold text-[#050D0A] shadow-[0_0_28px_-6px_#21A038] transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-50"
+              className="w-full rounded-full bg-[var(--accent-border)] dark:bg-gradient-to-r dark:from-[#A8CF38] dark:to-[#21A038] py-2.5 text-sm font-semibold text-white dark:text-[#050D0A] shadow-[var(--shadow-btn)] transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-50"
             >
               Провести финансовый анализ
             </button>
@@ -838,7 +838,7 @@ export default function App() {
             text: "text-[var(--text-3)]",
           };
           return (
-            <div key={o.id} className="rounded-2xl border border-[var(--border-soft)] bg-[var(--surface-2)] p-5">
+            <div key={o.id} className="rounded-2xl bg-[var(--surface-2)] p-5 dark:border dark:border-[var(--border-soft)]">
               <div className="mb-1 flex items-center gap-2">
                 <span className={`h-2 w-2 shrink-0 rounded-full ${accent.dot}`} />
                 <p className={`text-sm font-semibold ${accent.text}`}>{o.title}</p>
@@ -860,10 +860,15 @@ export default function App() {
 
 <Card
   title="Как сэкономить"
-  action={
-    recommendations.length > 0 ? `≈ ${money(totalMonthlySaving)} / мес` : undefined
-  }
 >
+  {recommendations.length > 0 && (
+    <div className="mb-4 flex items-baseline justify-between gap-3 rounded-2xl bg-[var(--accent-soft)] px-4 py-3">
+      <span className="text-sm text-[var(--text-3)]">Потенциал экономии</span>
+      <span className="text-xl font-bold tracking-tight text-[var(--accent)]">
+        ≈ {money(totalMonthlySaving)} / мес
+      </span>
+    </div>
+  )}
   <div className="space-y-3.5">
     {!aiLoaded || aiLoading ? (
       <p className="py-2 text-center text-sm text-[var(--text-4)]">
@@ -877,7 +882,7 @@ export default function App() {
       recommendations.map((r) => {
         const style = PRIORITY_STYLE[r.data.priority] ?? PRIORITY_STYLE.low;
         return (
-          <div key={r.id} className="rounded-2xl bg-[#3FC8A0]/[0.07] p-4">
+          <div key={r.id} className="rounded-2xl bg-[var(--surface-2)] p-4 transition-all duration-200 ease-in-out dark:border dark:border-[var(--border-soft)]">
             <div className="mb-1 flex items-center justify-between gap-2">
               <p className="text-sm font-semibold text-[var(--text)]">{r.title}</p>
               <span
@@ -898,8 +903,22 @@ export default function App() {
       })
     )}
   </div>
+  {recommendations.length > 0 && (
+    <button
+      onClick={() =>
+        document
+          .getElementById("savings-planner")
+          ?.scrollIntoView({ behavior: "smooth", block: "center" })
+      }
+      className="mt-4 w-full rounded-full bg-[var(--accent-border)] py-2.5 text-sm font-semibold text-white shadow-[var(--shadow-btn)] transition-all duration-200 ease-in-out hover:brightness-110 dark:bg-gradient-to-r dark:from-[#A8CF38] dark:to-[#21A038] dark:text-[#050D0A]"
+    >
+      Перейти к плану экономии
+    </button>
+  )}
 </Card>
-          <SavingsPlanner statementId={currentId} />
+          <div id="savings-planner">
+            <SavingsPlanner statementId={currentId} />
+          </div>
         </div>
       </div>
       </div>

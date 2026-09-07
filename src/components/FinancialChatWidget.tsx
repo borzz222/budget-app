@@ -14,14 +14,14 @@ function ChatIcon() {
     <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none">
       <path
         d="M4 6.5A3.5 3.5 0 0 1 7.5 3h9A3.5 3.5 0 0 1 20 6.5v7a3.5 3.5 0 0 1-3.5 3.5H9l-5 4v-11Z"
-        stroke="#050D0A"
+        stroke="currentColor"
         strokeWidth="2"
         strokeLinecap="round"
         strokeLinejoin="round"
       />
-      <circle cx="9" cy="10" r="1" fill="#050D0A" />
-      <circle cx="12.5" cy="10" r="1" fill="#050D0A" />
-      <circle cx="16" cy="10" r="1" fill="#050D0A" />
+      <circle cx="9" cy="10" r="1" fill="currentColor" />
+      <circle cx="12.5" cy="10" r="1" fill="currentColor" />
+      <circle cx="16" cy="10" r="1" fill="currentColor" />
     </svg>
   );
 }
@@ -77,7 +77,7 @@ export default function FinancialChatWidget() {
         <button
           onClick={() => setOpen(true)}
           title="Финансовый консультант"
-          className="fixed bottom-5 right-5 z-40 flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br from-[#A8CF38] to-[#21A038] shadow-[0_0_32px_-6px_#21A038] transition hover:brightness-110"
+          className="fixed bottom-5 right-5 z-40 flex h-14 w-14 items-center justify-center rounded-full bg-[var(--accent-border)] dark:bg-gradient-to-br dark:from-[#A8CF38] dark:to-[#21A038] shadow-[0_0_32px_-6px_#21A038] transition-all duration-200 ease-in-out hover:brightness-110"
         >
           <ChatIcon />
         </button>
@@ -111,7 +111,7 @@ export default function FinancialChatWidget() {
                 <div
                   className={`max-w-[85%] rounded-2xl p-3 shadow-sm ${
                     m.role === "user"
-                      ? "rounded-br-md bg-gradient-to-br from-[#A8CF38] to-[#21A038] text-[#050D0A] font-medium"
+                      ? "rounded-br-md bg-[var(--accent-border)] dark:bg-gradient-to-br dark:from-[#A8CF38] dark:to-[#21A038] text-white font-medium dark:text-[#050D0A]"
                       : "rounded-tl-md border border-[var(--border)] bg-[var(--field)] text-[var(--text)]"
                   }`}
                 >
@@ -153,12 +153,12 @@ export default function FinancialChatWidget() {
                 onClick={send}
                 disabled={!canSend}
                 aria-label="Отправить"
-                className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-[#A8CF38] to-[#21A038] text-[#050D0A] transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-40"
+                className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[var(--accent-border)] dark:bg-gradient-to-br dark:from-[#A8CF38] dark:to-[#21A038] text-white transition-all duration-200 ease-in-out hover:brightness-110 dark:text-[#050D0A] disabled:cursor-not-allowed disabled:opacity-40"
               >
                 <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none">
                   <path
                     d="M4 12 20 4l-4.5 8L20 20 4 12Z"
-                    stroke="#050D0A"
+                    stroke="currentColor"
                     strokeWidth="2"
                     strokeLinecap="round"
                     strokeLinejoin="round"

@@ -52,7 +52,7 @@ export default function SavingsPlanner({
   }
 
   return (
-    <div className="rounded-3xl border border-[var(--border)] bg-[var(--surface)] p-6 shadow-[var(--shadow-card)] backdrop-blur-2xl">
+    <div className="rounded-[var(--radius-card)] border border-[var(--border)] bg-[var(--surface)] p-6 shadow-[var(--shadow-card)] transition-all duration-200 ease-in-out dark:backdrop-blur-2xl">
       <h2 className="text-base font-semibold text-[var(--text)]">Хочу экономить</h2>
       <p className="mb-4 mt-0.5 text-sm text-[var(--text-3)]">
         Укажите цель, распределим её по категориям
@@ -73,7 +73,7 @@ export default function SavingsPlanner({
         <button
           onClick={submit}
           disabled={!canSubmit}
-          className="shrink-0 rounded-full bg-gradient-to-r from-[#A8CF38] to-[#21A038] px-5 py-2.5 text-sm font-semibold text-[#050D0A] shadow-[0_0_28px_-8px_#21A038] transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-40 disabled:shadow-none"
+          className="shrink-0 rounded-full bg-[var(--accent-border)] dark:bg-gradient-to-r dark:from-[#A8CF38] dark:to-[#21A038] px-5 py-2.5 text-sm font-semibold text-white dark:text-[#050D0A] shadow-[var(--shadow-btn)] transition-all duration-200 ease-in-out hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-40 disabled:shadow-none"
         >
           {busy ? "Считаем…" : "Рассчитать план"}
         </button>
