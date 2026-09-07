@@ -507,7 +507,7 @@ export default function App() {
         </div>
       </header>
 
-      <div className="mb-8 grid grid-cols-1 items-start gap-6 lg:mb-10 lg:grid-cols-2">
+      <div className="mb-8 grid grid-cols-1 gap-6 lg:mb-10 lg:grid-cols-2">
         <div className="rounded-[var(--radius-card)] border border-[var(--border)] bg-[var(--surface)] p-7 shadow-[var(--shadow-card)] transition-all duration-200 ease-in-out md:p-8 dark:backdrop-blur-2xl">
           <UploadForm onUploaded={handleUploaded} />
           <ReceiptUploader statementId={currentId} onConfirmed={handleConfirmed} />
@@ -515,22 +515,24 @@ export default function App() {
             <ManualTransactionForm statementId={currentId} onSaved={handleConfirmed} />
           </div>
         </div>
-        <div className="rounded-[var(--radius-card)] border border-[var(--border)] bg-[var(--surface)] p-7 shadow-[var(--shadow-card)] transition-all duration-200 ease-in-out md:p-8 dark:backdrop-blur-2xl">
+        <div className="flex flex-col rounded-[var(--radius-card)] border border-[var(--border)] bg-[var(--surface)] p-7 shadow-[var(--shadow-card)] transition-all duration-200 ease-in-out md:p-8 dark:backdrop-blur-2xl">
           <StatementSelector
             statements={statements}
             currentId={currentId}
             onSelect={setCurrentId}
           />
-          {loading && <p className="mt-3 text-sm text-[var(--text-4)]">Загрузка данных…</p>}
-          {apiError && <p className="mt-3 text-sm text-[var(--danger)]">{apiError}</p>}
-          {currentStatement && (
-            <p className="mt-3 text-xs text-[var(--text-4)]">
-              {currentStatement.transactions_count} операций
-              {currentStatement.period_from && currentStatement.period_to
-                ? ` · ${currentStatement.period_from} — ${currentStatement.period_to}`
-                : ""}
-            </p>
-          )}
+          <div className="flex flex-1 flex-col justify-center gap-2 py-4">
+            {loading && <p className="text-sm text-[var(--text-4)]">Загрузка данных…</p>}
+            {apiError && <p className="text-sm text-[var(--danger)]">{apiError}</p>}
+            {currentStatement && (
+              <p className="text-xs text-[var(--text-4)]">
+                {currentStatement.transactions_count} операций
+                {currentStatement.period_from && currentStatement.period_to
+                  ? ` · ${currentStatement.period_from} — ${currentStatement.period_to}`
+                  : ""}
+              </p>
+            )}
+          </div>
         </div>
       </div>
 
