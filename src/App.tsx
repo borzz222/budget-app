@@ -92,25 +92,61 @@ const xTickInterval = (length: number) =>
 const INSIGHT_ACCENT: Record<string, { dot: string; text: string }> = {
   аномалия: { dot: "bg-orange-500", text: "text-orange-700" },
   подписка: { dot: "bg-sky-500", text: "text-sky-700" },
-  рост_расходов: { dot: "bg-[#FF6B6B]/100", text: "text-[#FF6B6B]" },
-  главная_категория: { dot: "bg-[#21A038]", text: "text-[#3FC8A0]" },
+  рост_расходов: { dot: "bg-[var(--danger)]/080", text: "text-[var(--danger)]" },
+  главная_категория: { dot: "bg-[#21A038]", text: "text-[var(--accent)]" },
   временной_паттерн: { dot: "bg-violet-500", text: "text-violet-700" },
 };
 
 const PRIORITY_STYLE: Record<string, { badge: string; amount: string }> = {
-  high: { badge: "bg-[#FF6B6B]/10 text-[#FF6B6B]", amount: "text-[#FF6B6B]" },
-  medium: { badge: "bg-amber-50 text-amber-700", amount: "text-[#F2F5F3]" },
-  low: { badge: "bg-white/[0.06] text-[#8FA79A]", amount: "text-[#8FA79A]" },
+  high: { badge: "bg-[var(--danger)]/08 text-[var(--danger)]", amount: "text-[var(--danger)]" },
+  medium: { badge: "bg-amber-50 text-amber-700", amount: "text-[var(--text)]" },
+  low: { badge: "bg-[var(--surface-3)] text-[var(--text-3)]", amount: "text-[var(--text-3)]" },
 };
 /* ---------------- ЛОГОТИПЫ ---------------- */
 
-// Вариант 1: круг, поделённый на доли
+function ThemeToggle({
+  theme,
+  onToggle,
+}: {
+  theme: "light" | "dark";
+  onToggle: () => void;
+}) {
+  return (
+    <button
+      onClick={onToggle}
+      title={theme === "dark" ? "Светлая тема" : "Тёмная тема"}
+      aria-label="Переключить тему"
+      className="flex h-10 w-10 items-center justify-center rounded-full border border-[var(--border-strong)] bg-[var(--surface)] text-[var(--text-2)] backdrop-blur-xl transition hover:bg-[var(--surface-3)]"
+    >
+      {theme === "dark" ? (
+        <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none">
+          <circle cx="12" cy="12" r="4.5" stroke="currentColor" strokeWidth="2" />
+          <path
+            d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M19.1 4.9l-1.4 1.4M6.3 17.7l-1.4 1.4"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+          />
+        </svg>
+      ) : (
+        <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none">
+          <path
+            d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5Z"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinejoin="round"
+          />
+        </svg>
+      )}
+    </button>
+  );
+}
 
 function Logo() {
   return (
     <div className="flex items-center gap-3">
       <div className="relative flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-[#A8CF38] via-[#3FC8A0] to-[#21A038]">
-        <div className="absolute inset-0 rounded-2xl bg-[#A8CF38] opacity-60 blur-xl" />
+        <div className="absolute inset-0 rounded-2xl bg-[#A8CF38] opacity-70 blur-lg" />
         <svg viewBox="0 0 24 24" className="relative h-6 w-6" fill="none">
           <path d="M4 9h16M4 15h16" stroke="#071410" strokeWidth="2.5" strokeLinecap="round" />
           <circle cx="8" cy="9" r="2.5" fill="#071410" />
@@ -118,10 +154,10 @@ function Logo() {
         </svg>
       </div>
       <div>
-        <p className="text-xl font-bold leading-tight tracking-tight text-[#F2F5F3]">
+        <p className="text-xl font-bold leading-tight tracking-tight text-[var(--text)]">
           FinBalance
         </p>
-        <p className="text-xs leading-tight text-[#5C7268]">Общий бюджет</p>
+        <p className="text-xs leading-tight text-[var(--text-4)]">Общий бюджет</p>
       </div>
     </div>
   );
@@ -130,7 +166,7 @@ function Logo() {
 function Badge({ value }: { value: number }) {
   if (value === 0) {
     return (
-      <span className="rounded-full bg-white/[0.06] px-2 py-0.5 text-xs font-medium text-[#8FA79A]">
+      <span className="rounded-full bg-[var(--surface-3)] px-2 py-0.5 text-xs font-medium text-[var(--text-3)]">
         стабильно
       </span>
     );
@@ -139,7 +175,7 @@ function Badge({ value }: { value: number }) {
   return (
     <span
       className={`rounded-full px-2 py-0.5 text-xs font-medium ${
-        up ? "bg-[#FF6B6B]/10 text-[#FF6B6B]" : "bg-[#3FC8A0]/10 text-[#3FC8A0]"
+        up ? "bg-[var(--danger)]/08 text-[var(--danger)]" : "bg-[#3FC8A0]/10 text-[var(--accent)]"
       }`}
     >
       {up ? "+" : ""}
@@ -161,20 +197,20 @@ function Stat({
 }) {
   return (
     <div
-      className={`flex items-baseline justify-between gap-3 rounded-3xl px-5 py-4 backdrop-blur-2xl ${
+      className={`flex items-baseline justify-between gap-3 rounded-3xl px-6 py-6 backdrop-blur-2xl ${
         dark
           ? "bg-gradient-to-br from-[#A8CF38] via-[#3FC8A0] to-[#21A038] text-[#050D0A]"
-          : "border border-white/[0.08] bg-gradient-to-b from-white/[0.07] to-white/[0.02]"
+          : "border border-[var(--border)] bg-[var(--surface)]"
       }`}
     >
       <div>
-        <p className={`text-sm font-medium ${dark ? "text-[#0A1F14]/70" : "text-[#8FA79A]"}`}>{label}</p>
-        <p className={`mt-1 text-3xl font-bold tracking-tight ${dark ? "text-[#050D0A]" : "text-[#F2F5F3]"}`}>
+        <p className={`text-sm font-medium ${dark ? "text-[#0A1F14]/70" : "text-[var(--text-3)]"}`}>{label}</p>
+        <p className={`mt-1 text-3xl font-bold tracking-tight ${dark ? "text-[#050D0A]" : "text-[var(--text)]"}`}>
           {value}
         </p>
       </div>
       {hint && (
-        <p className={`text-sm ${dark ? "text-[#0A1F14]/60" : "text-[#5C7268]"}`}>{hint}</p>
+        <p className={`text-sm ${dark ? "text-[#0A1F14]/60" : "text-[var(--text-4)]"}`}>{hint}</p>
       )}
     </div>
   );
@@ -192,11 +228,11 @@ function Card({
   className?: string;
 }) {
   return (
-    <div className={`rounded-3xl border border-white/[0.08] bg-gradient-to-b from-white/[0.07] to-white/[0.02] p-6 backdrop-blur-2xl ${className}`}>
+    <div className={`rounded-3xl border border-[var(--border)] bg-[var(--surface)] p-7 shadow-[var(--shadow-card)] md:p-8 backdrop-blur-2xl ${className}`}>
       {title && (
-        <div className="mb-5 flex items-baseline justify-between">
-          <h2 className="text-base font-semibold text-[#F2F5F3]">{title}</h2>
-          {action && <span className="text-base text-[#8FA79A]">{action}</span>}
+        <div className="mb-6 flex items-baseline justify-between">
+          <h2 className="text-base font-semibold text-[var(--text)]">{title}</h2>
+          {action && <span className="text-base text-[var(--text-3)]">{action}</span>}
         </div>
       )}
       {children}
@@ -347,16 +383,37 @@ export default function App() {
   const recommendations = aiInsights.filter(isRecommendation);
   const totalMonthlySaving = recommendations.reduce((s, r) => s + r.data.monthly_saving, 0);
 
+  const [theme, setTheme] = useState<"light" | "dark">(() =>
+    typeof window !== "undefined" && localStorage.getItem("theme") === "dark"
+      ? "dark"
+      : "light",
+  );
+
+  useEffect(() => {
+    document.documentElement.classList.toggle("dark", theme === "dark");
+    localStorage.setItem("theme", theme);
+  }, [theme]);
+
+  const axisTick = { fontSize: 12, fill: "var(--chart-axis)" };
+  const tooltipStyle = {
+    background: "var(--overlay)",
+    border: "1px solid var(--border-strong)",
+    borderRadius: 12,
+    color: "var(--text)",
+    fontSize: 13,
+    backdropFilter: "blur(12px)",
+  };
+
   const daysLeft = 17;
   const forecastDate = "21 сентября";
 
   return (
-    <div className="min-h-screen relative isolate bg-[#050D0A] px-4 py-5 font-sans text-[#F2F5F3] md:px-8 md:py-7">
+    <div className="min-h-screen relative isolate bg-[var(--bg)] px-5 py-8 font-sans text-[var(--text)] md:px-10 md:py-12 lg:px-14">
       {/* ambient glow */}
       <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
-        <div className="absolute -right-40 -top-48 h-[38rem] w-[38rem] rounded-full bg-[#21A038] opacity-[0.20] blur-[130px]" />
-        <div className="absolute -left-48 top-1/3 h-[34rem] w-[34rem] rounded-full bg-[#3FC8A0] opacity-[0.12] blur-[150px]" />
-        <div className="absolute -bottom-40 left-1/2 h-[30rem] w-[44rem] -translate-x-1/2 rounded-full bg-[#A8CF38] opacity-[0.08] blur-[140px]" />
+        <div className="absolute -right-40 -top-48 h-[38rem] w-[38rem] rounded-full bg-[var(--glow-1)] blur-[130px]" />
+        <div className="absolute -left-48 top-1/3 h-[34rem] w-[34rem] rounded-full bg-[var(--glow-2)] blur-[150px]" />
+        <div className="absolute -bottom-40 left-1/2 h-[30rem] w-[44rem] -translate-x-1/2 rounded-full bg-[var(--glow-3)] blur-[140px]" />
       </div>
       <div className="relative z-10">
       <Toaster />
@@ -369,26 +426,27 @@ export default function App() {
         onChange={onFile}
       />
 
-      <header className="mb-6 flex flex-col gap-4 md:mb-7 md:flex-row md:items-start md:justify-between">
+      <header className="mb-10 flex flex-col gap-5 md:mb-12 md:flex-row md:items-start md:justify-between">
         <div className="flex flex-col gap-3">
           <Logo />
           <div>
-            <h1 className="text-lg font-medium tracking-tight text-[#C4D4CB]">
+            <h1 className="text-lg font-medium tracking-tight text-[var(--text-2)]">
               Квартира на Мира, 19
             </h1>
-            <p className="mt-0.5 text-sm text-[#8FA79A]">Сентябрь · 4 участника</p>
+            <p className="mt-0.5 text-sm text-[var(--text-3)]">Сентябрь · 4 участника</p>
           </div>
         </div>
 
         <div className="flex flex-col items-start gap-3 md:items-end">
           <div className="flex items-center gap-4">
+            <ThemeToggle theme={theme} onToggle={() => setTheme((t) => (t === "dark" ? "light" : "dark"))} />
             <div className="text-right">
-              <p className="text-xs text-[#8FA79A]">
+              <p className="text-xs text-[var(--text-3)]">
                 {myBalance < 0 ? "Ты должен" : "Тебе должны"}
               </p>
               <p
                 className={`text-xl font-semibold tracking-tight ${
-                  myBalance < 0 ? "text-[#FF6B6B]" : "text-[#3FC8A0]"
+                  myBalance < 0 ? "text-[var(--danger)]" : "text-[var(--accent)]"
                 }`}
               >
                 {money(Math.abs(myBalance))}
@@ -418,15 +476,15 @@ export default function App() {
           <div className="flex items-center gap-2">
             {SHOW_LEGACY_WIDGETS &&
               (card ? (
-                <div className="flex items-center gap-3 rounded-full bg-[#0D1F18] border border-[#1C3329] px-4 py-2">
+                <div className="flex items-center gap-3 rounded-full border border-[var(--border-strong)] bg-white px-4 py-2">
                   <span className="h-2 w-2 rounded-full bg-[#21A038]" />
                   <div className="text-left">
-                    <p className="text-xs leading-tight text-[#5C7268]">{card.name}</p>
+                    <p className="text-xs leading-tight text-[var(--text-4)]">{card.name}</p>
                     <p className="text-sm font-semibold leading-tight">{money(card.balance)}</p>
                   </div>
                   <button
                     onClick={() => setCard(null)}
-                    className="ml-1 text-xs text-[#5C7268] hover:text-[#8FA79A]"
+                    className="ml-1 text-xs text-[var(--text-4)] hover:text-[var(--text-3)]"
                   >
                     отвязать
                   </button>
@@ -434,7 +492,7 @@ export default function App() {
               ) : (
                 <button
                   onClick={() => setCard({ name: "СберКарта •••• 4417", balance: 42300 })}
-                  className="rounded-full border border-[#1C3329] px-4 py-2 text-sm font-medium text-[#C4D4CB] transition hover:bg-white/[0.06]"
+                  className="rounded-full border border-[var(--border-strong)] px-4 py-2 text-sm font-medium text-[var(--text-2)] transition hover:bg-[var(--surface-3)]"
                 >
                   Привязать карту
                 </button>
@@ -449,24 +507,24 @@ export default function App() {
         </div>
       </header>
 
-      <div className="mb-4 grid grid-cols-1 gap-4 md:gap-5 lg:mb-5 lg:grid-cols-2">
-        <div className="rounded-3xl border border-white/[0.08] bg-gradient-to-b from-white/[0.07] to-white/[0.02] p-6 backdrop-blur-2xl">
+      <div className="mb-6 grid grid-cols-1 gap-6 md:gap-7 lg:mb-8 lg:grid-cols-2">
+        <div className="rounded-3xl border border-[var(--border)] bg-[var(--surface)] p-7 shadow-[var(--shadow-card)] md:p-8 backdrop-blur-2xl">
           <UploadForm onUploaded={handleUploaded} />
           <ReceiptUploader statementId={currentId} onConfirmed={handleConfirmed} />
-          <div className="mt-4 border-t border-[#1C3329] pt-4">
+          <div className="mt-4 border-t border-[var(--border-strong)] pt-4">
             <ManualTransactionForm statementId={currentId} onSaved={handleConfirmed} />
           </div>
         </div>
-        <div className="rounded-3xl border border-white/[0.08] bg-gradient-to-b from-white/[0.07] to-white/[0.02] p-6 backdrop-blur-2xl">
+        <div className="rounded-3xl border border-[var(--border)] bg-[var(--surface)] p-7 shadow-[var(--shadow-card)] md:p-8 backdrop-blur-2xl">
           <StatementSelector
             statements={statements}
             currentId={currentId}
             onSelect={setCurrentId}
           />
-          {loading && <p className="mt-3 text-sm text-[#5C7268]">Загрузка данных…</p>}
-          {apiError && <p className="mt-3 text-sm text-[#FF6B6B]">{apiError}</p>}
+          {loading && <p className="mt-3 text-sm text-[var(--text-4)]">Загрузка данных…</p>}
+          {apiError && <p className="mt-3 text-sm text-[var(--danger)]">{apiError}</p>}
           {currentStatement && (
-            <p className="mt-3 text-xs text-[#5C7268]">
+            <p className="mt-3 text-xs text-[var(--text-4)]">
               {currentStatement.transactions_count} операций
               {currentStatement.period_from && currentStatement.period_to
                 ? ` · ${currentStatement.period_from} — ${currentStatement.period_to}`
@@ -476,7 +534,7 @@ export default function App() {
         </div>
       </div>
 
-      <div className="mb-4 grid grid-cols-1 gap-4 md:gap-5 lg:mb-5 lg:grid-cols-3">
+      <div className="mb-6 grid grid-cols-1 gap-6 md:gap-7 lg:mb-8 lg:grid-cols-3">
         <Stat
           label="Баланс выписки"
           value={stats ? money(stats.balance) : "—"}
@@ -491,24 +549,24 @@ export default function App() {
         />
       </div>
 
-      <div className="grid grid-cols-1 gap-4 md:gap-5 lg:grid-cols-3">
-        <div className="space-y-4 md:space-y-5 lg:col-span-2">
+      <div className="grid grid-cols-1 gap-6 md:gap-7 lg:grid-cols-3">
+        <div className="space-y-6 md:space-y-7 lg:col-span-2">
           {SHOW_LEGACY_WIDGETS && (
             <Card title="Кто кому должен" action="минимум переводов">
-            <div className="space-y-3">
+            <div className="space-y-3.5">
               {settlements.map((s, i) => {
                 const mine = s.from === ME || s.to === ME;
                 return (
                   <div
                     key={i}
-                    className={`flex flex-col gap-3 rounded-2xl px-4 py-3 sm:flex-row sm:items-center sm:justify-between ${
-                      mine ? "border border-[#3FC8A0]/25 bg-[#3FC8A0]/[0.10]" : "border border-white/[0.06] bg-white/[0.03]"
+                    className={`flex flex-col gap-3 rounded-2xl px-5 py-4 sm:flex-row sm:items-center sm:justify-between ${
+                      mine ? "border border-[var(--accent-border)]/40 bg-[var(--accent-soft)]" : "border border-[var(--border-soft)] bg-[var(--surface-2)]"
                     }`}
                   >
                     <div className="flex items-center gap-3">
                       <span className="text-sm font-medium">{s.from}</span>
                       <svg width="28" height="8" viewBox="0 0 28 8" fill="none">
-                        <path d="M0 4h24m0 0-4-3.5M24 4l-4 3.5" stroke="#3FC8A0" strokeWidth="1.5" />
+                        <path d="M0 4h24m0 0-4-3.5M24 4l-4 3.5" stroke="var(--accent-border)" strokeWidth="1.5" />
                       </svg>
                       <span className="text-sm font-medium">{s.to}</span>
                     </div>
@@ -516,10 +574,10 @@ export default function App() {
                       <span
                         className={`text-sm font-semibold ${
                           s.from === ME
-                            ? "text-[#FF6B6B]"
+                            ? "text-[var(--danger)]"
                             : s.to === ME
-                            ? "text-[#3FC8A0]"
-                            : "text-[#8FA79A]"
+                            ? "text-[var(--accent)]"
+                            : "text-[var(--text-3)]"
                         }`}
                       >
                         {money(s.amount)}
@@ -534,7 +592,7 @@ export default function App() {
                       ) : s.to === ME ? (
                         <button
                           disabled
-                          className="cursor-not-allowed rounded-full border border-[#1C3329] px-4 py-1.5 text-xs font-medium text-[#C4D4CB] opacity-50"
+                          className="cursor-not-allowed rounded-full border border-[var(--border-strong)] px-4 py-1.5 text-xs font-medium text-[var(--text-2)] opacity-50"
                         >
                           Напомнить
                         </button>
@@ -558,7 +616,7 @@ export default function App() {
                 <AreaChart data={chartWeekly} margin={{ top: 5, right: 5, left: -20, bottom: 0 }}>
                   <defs>
                     <linearGradient id="g" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="#A8CF38" stopOpacity={0.45} />
+                      <stop offset="0%" stopColor="var(--chart-line)" stopOpacity={0.4} />
                       <stop offset="100%" stopColor="#3FC8A0" stopOpacity={0} />
                     </linearGradient>
                   </defs>
@@ -566,21 +624,21 @@ export default function App() {
                     dataKey="week"
                     tickLine={false}
                     axisLine={false}
-                    tick={{ fontSize: 12, fill: "#5C7268" }}
+                    tick={axisTick}
                     tickFormatter={shortDate}
                     interval={xTickInterval(chartWeekly.length)}
                   />
                   <YAxis
                     tickLine={false}
                     axisLine={false}
-                    tick={{ fontSize: 12, fill: "#5C7268" }}
+                    tick={axisTick}
                     tickFormatter={(v) => v / 1000 + "к"}
                   />
                   <Tooltip
                     formatter={(v) => [money(Number(v ?? 0)), "Потрачено"]}
-                    contentStyle={{ background: "#0D1F18", border: "1px solid #1C3329", borderRadius: 12, color: "#F2F5F3", fontSize: 13 }}
+                    contentStyle={tooltipStyle}
                   />
-                  <Area type="monotone" dataKey="sum" stroke="#A8CF38" strokeWidth={2.5} fill="url(#g)" />
+                  <Area type="monotone" dataKey="sum" stroke="var(--chart-line)" strokeWidth={2.5} fill="url(#g)" />
                 </AreaChart>
               </ResponsiveContainer>
             </div>
@@ -603,11 +661,11 @@ export default function App() {
                     axisLine={false}
                     width={92}
                     interval={0}
-                    tick={{ fontSize: 12, fill: "#8FA79A" }}
+                    tick={axisTick}
                   />
                   <Tooltip
                     formatter={(v) => [money(Number(v ?? 0)), "Сумма"]}
-                    contentStyle={{ background: "#0D1F18", border: "1px solid #1C3329", borderRadius: 12, color: "#F2F5F3", fontSize: 13 }}
+                    contentStyle={tooltipStyle}
                   />
                   <Bar dataKey="sum" radius={[0, 6, 6, 0]} barSize={14}>
                     {chartCategories.map((c, i) => (
@@ -617,10 +675,10 @@ export default function App() {
                 </BarChart>
               </ResponsiveContainer>
             </div>
-            <div className="mt-4 divide-y divide-[#1C3329] border-t border-[#1C3329]">
+            <div className="mt-4 divide-y divide-[var(--border-soft)] border-t border-[var(--border-strong)]">
               {chartCategories.map((c) => (
                 <div key={c.name} className="flex items-center justify-between py-2.5 text-sm">
-                  <span className="text-[#8FA79A]">{c.name}</span>
+                  <span className="text-[var(--text-3)]">{c.name}</span>
                   <div className="flex items-center gap-3">
                     <span className="font-medium">{money(c.sum)}</span>
                     <Badge value={c.trend} />
@@ -631,9 +689,9 @@ export default function App() {
           </Card>
         </div>
 
-        <div className="space-y-5">
+        <div className="space-y-6 md:space-y-7">
           {SHOW_LEGACY_WIDGETS && (
-            <div className="rounded-3xl bg-[#0F3D2E] p-6 text-white">
+            <div className="rounded-3xl bg-[#0F3D2E] p-7 text-white md:p-8">
             <p className="text-sm text-white/70">Бюджет закончится</p>
             <p className="mt-2 text-3xl font-semibold tracking-tight">{forecastDate}</p>
             <p className="mt-1 text-sm text-white/60">на 9 дней раньше плана</p>
@@ -660,17 +718,17 @@ export default function App() {
             <p className="text-sm font-medium">{goal.name}</p>
             <div className="mt-3 flex items-baseline justify-between">
               <p className="text-2xl font-semibold tracking-tight">{money(goal.saved)}</p>
-              <p className="text-2xl font-semibold tracking-tight text-[#5C7268]">
+              <p className="text-2xl font-semibold tracking-tight text-[var(--text-4)]">
                 из {money(goal.target)}
               </p>
             </div>
-            <div className="mt-3 h-2 w-full overflow-hidden rounded-full bg-white/[0.06]">
+            <div className="mt-3 h-2 w-full overflow-hidden rounded-full bg-[var(--surface-3)]">
               <div
                 className="h-full rounded-full bg-gradient-to-r from-[#A8CF38] to-[#3FC8A0]"
                 style={{ width: `${(goal.saved / goal.target) * 100}%` }}
               />
             </div>
-            <p className="mt-3 text-sm leading-relaxed text-[#8FA79A]">
+            <p className="mt-3 text-sm leading-relaxed text-[var(--text-3)]">
               Осталось {money(goal.target - goal.saved)} — это по{" "}
               {money(Math.round((goal.target - goal.saved) / 4))} с каждого.
             </p>
@@ -697,7 +755,7 @@ export default function App() {
                     </Pie>
                     <Tooltip
                       formatter={(v) => money(Number(v ?? 0))}
-                      contentStyle={{ background: "#0D1F18", border: "1px solid #1C3329", borderRadius: 12, color: "#F2F5F3", fontSize: 13 }}
+                      contentStyle={tooltipStyle}
                     />
                   </PieChart>
                 </ResponsiveContainer>
@@ -709,13 +767,13 @@ export default function App() {
                       return `${Math.round((recipientSlices[0].sum / total) * 100)}%`;
                     })()}
                   </p>
-                  <p className="text-[10px] text-[#5C7268]">топ-1 доля</p>
+                  <p className="text-[10px] text-[var(--text-4)]">топ-1 доля</p>
                 </div>
               </div>
 
               <div className="min-w-0 flex-1 space-y-2">
                 {recipientSlices.length === 0 && (
-                  <p className="text-sm text-[#5C7268]">Получателей нет</p>
+                  <p className="text-sm text-[var(--text-4)]">Получателей нет</p>
                 )}
                 {recipientSlices.map((m) => {
                   const total = recipientSlices.reduce((s, x) => s + x.sum, 0);
@@ -724,11 +782,11 @@ export default function App() {
                     <div key={m.name} className="flex items-center justify-between gap-2 text-sm">
                       <div className="flex min-w-0 items-center gap-2">
                         <span className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ background: m.color }} />
-                        <span className="truncate text-[#8FA79A]">{m.name}</span>
+                        <span className="truncate text-[var(--text-3)]">{m.name}</span>
                       </div>
                       <div className="flex shrink-0 items-center gap-2">
                         <span className="text-xs font-medium">{money(m.sum)}</span>
-                        <span className="w-8 text-right text-xs text-[#5C7268]">{pct}%</span>
+                        <span className="w-8 text-right text-xs text-[var(--text-4)]">{pct}%</span>
                       </div>
                     </div>
                   );
@@ -738,16 +796,16 @@ export default function App() {
           </Card>
 
           <Card title="Что заметил ассистент">
-  <div className="space-y-3">
+  <div className="space-y-3.5">
     {!aiLoaded || aiLoading ? (
-      <p className="py-2 text-center text-sm text-[#5C7268]">
+      <p className="py-2 text-center text-sm text-[var(--text-4)]">
         {aiLoading ? "Анализируем ваши финансы…" : "Загрузка…"}
       </p>
     ) : observations.length === 0 ? (
       <div>
         {aiInsights.length === 0 && !aiRan ? (
           <>
-            <p className="mb-3 text-sm leading-relaxed text-[#8FA79A]">
+            <p className="mb-3 text-sm leading-relaxed text-[var(--text-3)]">
               Анализ для этой выписки ещё не проводился.
             </p>
             <button
@@ -760,12 +818,12 @@ export default function App() {
           </>
         ) : (
           <>
-            <p className="mb-3 text-sm leading-relaxed text-[#8FA79A]">
+            <p className="mb-3 text-sm leading-relaxed text-[var(--text-3)]">
               Наблюдений по этой выписке нет.
             </p>
             <button
               onClick={runAnalysis}
-              className="w-full rounded-full border border-[#1C3329] py-2 text-xs font-medium text-[#8FA79A] transition hover:bg-white/[0.03]"
+              className="w-full rounded-full border border-[var(--border-strong)] py-2 text-xs font-medium text-[var(--text-3)] transition hover:bg-[var(--surface-2)]"
             >
               Обновить анализ
             </button>
@@ -777,21 +835,21 @@ export default function App() {
         {observations.map((o) => {
           const accent = INSIGHT_ACCENT[o.type] ?? {
             dot: "bg-[#5C7268]",
-            text: "text-[#8FA79A]",
+            text: "text-[var(--text-3)]",
           };
           return (
-            <div key={o.id} className="rounded-2xl border border-white/[0.06] bg-white/[0.04] p-4">
+            <div key={o.id} className="rounded-2xl border border-[var(--border-soft)] bg-[var(--surface-2)] p-5">
               <div className="mb-1 flex items-center gap-2">
                 <span className={`h-2 w-2 shrink-0 rounded-full ${accent.dot}`} />
                 <p className={`text-sm font-semibold ${accent.text}`}>{o.title}</p>
               </div>
-              <p className="text-sm leading-relaxed text-[#C4D4CB]">{o.description}</p>
+              <p className="text-sm leading-relaxed text-[var(--text-2)]">{o.description}</p>
             </div>
           );
         })}
         <button
           onClick={runAnalysis}
-          className="w-full rounded-full border border-[#1C3329] py-2 text-xs font-medium text-[#8FA79A] transition hover:bg-white/[0.03]"
+          className="w-full rounded-full border border-[var(--border-strong)] py-2 text-xs font-medium text-[var(--text-3)] transition hover:bg-[var(--surface-2)]"
         >
           Обновить анализ
         </button>
@@ -806,13 +864,13 @@ export default function App() {
     recommendations.length > 0 ? `≈ ${money(totalMonthlySaving)} / мес` : undefined
   }
 >
-  <div className="space-y-3">
+  <div className="space-y-3.5">
     {!aiLoaded || aiLoading ? (
-      <p className="py-2 text-center text-sm text-[#5C7268]">
+      <p className="py-2 text-center text-sm text-[var(--text-4)]">
         {aiLoading ? "Анализируем ваши финансы…" : "Загрузка…"}
       </p>
     ) : recommendations.length === 0 ? (
-      <p className="py-2 text-sm leading-relaxed text-[#8FA79A]">
+      <p className="py-2 text-sm leading-relaxed text-[var(--text-3)]">
         Рекомендаций пока нет
       </p>
     ) : (
@@ -821,15 +879,15 @@ export default function App() {
         return (
           <div key={r.id} className="rounded-2xl bg-[#3FC8A0]/[0.07] p-4">
             <div className="mb-1 flex items-center justify-between gap-2">
-              <p className="text-sm font-semibold text-[#F2F5F3]">{r.title}</p>
+              <p className="text-sm font-semibold text-[var(--text)]">{r.title}</p>
               <span
                 className={`shrink-0 rounded-full px-2 py-0.5 text-xs font-medium ${style.badge}`}
               >
                 {r.data.priority}
               </span>
             </div>
-            <p className="text-sm leading-relaxed text-[#8FA79A]">{r.description}</p>
-            <p className="mt-1 text-sm leading-relaxed text-[#C4D4CB]">
+            <p className="text-sm leading-relaxed text-[var(--text-3)]">{r.description}</p>
+            <p className="mt-1 text-sm leading-relaxed text-[var(--text-2)]">
               {r.data.recommendation}
             </p>
             <p className={`mt-1.5 text-sm font-semibold ${style.amount}`}>

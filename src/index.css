@@ -1,1 +1,98 @@
 @import "tailwindcss";
+
+/* Тёмная тема включается классом .dark на <html> */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* ─────────── СВЕТЛАЯ ТЕМА ─────────── */
+:root {
+  --bg: #f1f4f1;
+
+  --surface: rgb(255 255 255 / 0.8);
+  --surface-2: rgb(10 22 17 / 0.025);
+  --surface-3: rgb(10 22 17 / 0.045);
+  --overlay: rgb(255 255 255 / 0.95);
+  --field: #ffffff;
+
+  --border: rgb(10 22 17 / 0.08);
+  --border-strong: rgb(10 22 17 / 0.12);
+  --border-soft: rgb(10 22 17 / 0.05);
+
+  --text: #0a1611;
+  --text-2: #2f4038;
+  --text-3: #5a6b62;
+  --text-4: #8a9a92;
+
+  --accent: #12864f;
+  --accent-border: #21a038;
+  --danger: #dc2626;
+  --danger-soft: rgb(220 38 38 / 0.1);
+  --accent-soft: rgb(18 134 79 / 0.12);
+  --warn-text: #5f7a16;
+  --warn-soft: rgb(168 207 56 / 0.16);
+  --warn-border: rgb(168 207 56 / 0.45);
+  --info-soft: rgb(14 165 233 / 0.1);
+  --info-text: #0369a1;
+
+  --chart-axis: #8a9a92;
+  --chart-axis-strong: #5a6b62;
+  --chart-line: #21a038;
+  --chart-fill-opacity: 0.28;
+
+  --shadow-card: 0 1px 3px rgb(10 22 17 / 0.04);
+  --shadow-pop: 0 20px 60px -20px rgb(10 22 17 / 0.25);
+
+  --glow-1: rgb(168 207 56 / 0.28);
+  --glow-2: rgb(63 200 160 / 0.2);
+  --glow-3: rgb(33 160 56 / 0.1);
+
+  color-scheme: light;
+}
+
+/* ─────────── ТЁМНАЯ ТЕМА ─────────── */
+.dark {
+  --bg: #050d0a;
+
+  --surface: rgb(255 255 255 / 0.05);
+  --surface-2: rgb(255 255 255 / 0.04);
+  --surface-3: rgb(255 255 255 / 0.07);
+  --overlay: rgb(10 22 17 / 0.95);
+  --field: rgb(5 13 10 / 0.7);
+
+  --border: rgb(255 255 255 / 0.09);
+  --border-strong: rgb(255 255 255 / 0.13);
+  --border-soft: rgb(255 255 255 / 0.06);
+
+  --text: #f2f5f3;
+  --text-2: #c4d4cb;
+  --text-3: #8fa79a;
+  --text-4: #5c7268;
+
+  --accent: #3fc8a0;
+  --accent-border: #3fc8a0;
+  --danger: #ff6b6b;
+  --danger-soft: rgb(255 107 107 / 0.15);
+  --accent-soft: rgb(63 200 160 / 0.15);
+  --warn-text: #d5e88a;
+  --warn-soft: rgb(168 207 56 / 0.08);
+  --warn-border: rgb(168 207 56 / 0.25);
+  --info-soft: rgb(56 189 248 / 0.12);
+  --info-text: #7dd3fc;
+
+  --chart-axis: #5c7268;
+  --chart-axis-strong: #8fa79a;
+  --chart-line: #a8cf38;
+  --chart-fill-opacity: 0.45;
+
+  --shadow-card: none;
+  --shadow-pop: 0 20px 60px -20px rgb(0 0 0 / 0.7);
+
+  --glow-1: rgb(33 160 56 / 0.2);
+  --glow-2: rgb(63 200 160 / 0.12);
+  --glow-3: rgb(168 207 56 / 0.08);
+
+  color-scheme: dark;
+}
+
+body {
+  background: var(--bg);
+}

@@ -83,7 +83,7 @@ export default function ManualTransactionForm({
       <button
         onClick={() => setOpen(true)}
         disabled={statementId == null}
-        className="flex items-center gap-2 rounded-full border border-white/[0.12] px-4 py-2 text-sm font-medium text-[#C4D4CB] transition hover:bg-white/[0.07] disabled:cursor-not-allowed disabled:opacity-40"
+        className="flex items-center gap-2 rounded-full border border-[var(--border-strong)] px-4 py-2 text-sm font-medium text-[var(--text-2)] transition hover:bg-[var(--surface-3)] disabled:cursor-not-allowed disabled:opacity-40"
       >
         <span className="text-base leading-none">+</span>
         Добавить операцию
@@ -92,14 +92,14 @@ export default function ManualTransactionForm({
   }
 
   return (
-    <div className="mt-4 space-y-3 rounded-2xl border border-white/[0.08] bg-white/[0.04] p-4">
-      <div className="grid grid-cols-2 gap-2 rounded-full border border-white/[0.08] bg-white/[0.04] p-1">
+    <div className="mt-4 space-y-3 rounded-2xl border border-[var(--border)] bg-[var(--surface-2)] p-4">
+      <div className="grid grid-cols-2 gap-2 rounded-full border border-[var(--border)] bg-[var(--surface-2)] p-1">
         <button
           onClick={() => switchType("debit")}
           className={`rounded-full py-1.5 text-sm font-medium transition ${
             entryType === "debit"
-              ? "bg-[#FF6B6B]/15 text-[#FF6B6B]"
-              : "text-[#5C7268] hover:text-[#C4D4CB]"
+              ? "bg-[var(--danger-soft)] text-[var(--danger)]"
+              : "text-[var(--text-4)] hover:text-[var(--text-2)]"
           }`}
         >
           Расход
@@ -108,8 +108,8 @@ export default function ManualTransactionForm({
           onClick={() => switchType("credit")}
           className={`rounded-full py-1.5 text-sm font-medium transition ${
             entryType === "credit"
-              ? "bg-[#3FC8A0]/15 text-[#3FC8A0]"
-              : "text-[#5C7268] hover:text-[#C4D4CB]"
+              ? "bg-[var(--accent-soft)] text-[var(--accent)]"
+              : "text-[var(--text-4)] hover:text-[var(--text-2)]"
           }`}
         >
           Доход
@@ -118,48 +118,48 @@ export default function ManualTransactionForm({
 
       <div className="grid grid-cols-2 gap-3">
         <label className="block">
-          <span className="mb-1 block text-xs text-[#8FA79A]">Дата</span>
+          <span className="mb-1 block text-xs text-[var(--text-3)]">Дата</span>
           <input
             type="date"
             value={date}
             onChange={(e) => setDate(e.target.value)}
-            className="w-full rounded-2xl border border-white/[0.10] bg-[#050D0A]/70 px-3 py-2 text-sm text-[#F2F5F3] placeholder-[#5C7268] outline-none transition focus:border-[#3FC8A0] [color-scheme:dark]"
+            className="w-full rounded-2xl border border-[var(--border-strong)] bg-[var(--field)] px-3 py-2 text-sm text-[var(--text)] placeholder-[var(--text-4)] outline-none transition focus:border-[var(--accent-border)]"
           />
         </label>
         <label className="block">
-          <span className="mb-1 block text-xs text-[#8FA79A]">Сумма, ₽</span>
+          <span className="mb-1 block text-xs text-[var(--text-3)]">Сумма, ₽</span>
           <input
             type="number"
             min={0}
             step="0.01"
             value={amount}
             onChange={(e) => setAmount(e.target.value)}
-            className="w-full rounded-2xl border border-white/[0.10] bg-[#050D0A]/70 px-3 py-2 text-sm text-[#F2F5F3] placeholder-[#5C7268] outline-none transition focus:border-[#3FC8A0] [color-scheme:dark]"
+            className="w-full rounded-2xl border border-[var(--border-strong)] bg-[var(--field)] px-3 py-2 text-sm text-[var(--text)] placeholder-[var(--text-4)] outline-none transition focus:border-[var(--accent-border)]"
           />
         </label>
       </div>
 
       <label className="block">
-        <span className="mb-1 block text-xs text-[#8FA79A]">Описание</span>
+        <span className="mb-1 block text-xs text-[var(--text-3)]">Описание</span>
         <input
           type="text"
           value={description}
           onChange={(e) => setDescription(e.target.value)}
           placeholder="Например: обед в кафе"
-          className="w-full rounded-2xl border border-white/[0.10] bg-[#050D0A]/70 px-3 py-2 text-sm text-[#F2F5F3] placeholder-[#5C7268] outline-none transition focus:border-[#3FC8A0] [color-scheme:dark]"
+          className="w-full rounded-2xl border border-[var(--border-strong)] bg-[var(--field)] px-3 py-2 text-sm text-[var(--text)] placeholder-[var(--text-4)] outline-none transition focus:border-[var(--accent-border)]"
         />
       </label>
 
       <label className="block">
-        <span className="mb-1 block text-xs text-[#8FA79A]">Категория</span>
+        <span className="mb-1 block text-xs text-[var(--text-3)]">Категория</span>
         <select
           value={category}
           onChange={(e) => setCategory(e.target.value)}
-          className="w-full rounded-2xl border border-white/[0.10] bg-[#050D0A]/70 px-3 py-2 text-sm text-[#F2F5F3] placeholder-[#5C7268] outline-none transition focus:border-[#3FC8A0] [color-scheme:dark]"
+          className="w-full rounded-2xl border border-[var(--border-strong)] bg-[var(--field)] px-3 py-2 text-sm text-[var(--text)] placeholder-[var(--text-4)] outline-none transition focus:border-[var(--accent-border)]"
         >
-          <option value="" className="bg-[#0D1F18] text-[#F2F5F3]">— выберите —</option>
+          <option value="" className="bg-[var(--field)] text-[var(--text)]">— выберите —</option>
           {options.map((c) => (
-            <option key={c} value={c} className="bg-[#0D1F18] text-[#F2F5F3]">
+            <option key={c} value={c} className="bg-[var(--field)] text-[var(--text)]">
               {c}
             </option>
           ))}
@@ -177,7 +177,7 @@ export default function ManualTransactionForm({
         <button
           onClick={() => setOpen(false)}
           disabled={busy}
-          className="rounded-full border border-white/[0.10] px-4 py-2 text-sm font-medium text-[#8FA79A] transition hover:bg-white/[0.07] disabled:opacity-40"
+          className="rounded-full border border-[var(--border-strong)] px-4 py-2 text-sm font-medium text-[var(--text-3)] transition hover:bg-[var(--surface-3)] disabled:opacity-40"
         >
           Отмена
         </button>

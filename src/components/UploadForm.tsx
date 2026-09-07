@@ -31,15 +31,15 @@ export default function UploadForm({
 
   return (
     <div>
-      <h2 className="mb-1 text-base font-semibold text-[#F2F5F3]">Загрузка выписки</h2>
-      <p className="mb-4 text-sm text-[#8FA79A]">CSV-файл банковской выписки</p>
+      <h2 className="mb-1 text-base font-semibold text-[var(--text)]">Загрузка выписки</h2>
+      <p className="mb-4 text-sm text-[var(--text-3)]">CSV-файл банковской выписки</p>
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
         <input
           ref={inputRef}
           type="file"
           accept=".csv"
           onChange={(e) => setFile(e.target.files?.[0] ?? null)}
-          className="block w-full cursor-pointer text-sm text-[#5C7268] file:mr-3 file:cursor-pointer file:rounded-full file:border file:border-white/[0.10] file:bg-white/[0.06] file:px-4 file:py-2 file:text-sm file:font-medium file:text-[#F2F5F3] file:transition hover:file:bg-white/[0.12]"
+          className="block w-full cursor-pointer text-sm text-[var(--text-4)] file:mr-3 file:cursor-pointer file:rounded-full file:border file:border-[var(--border-strong)] file:bg-[var(--surface-3)] file:px-4 file:py-2 file:text-sm file:font-medium file:text-[var(--text)] file:transition hover:file:bg-[var(--surface-3)]"
         />
         <button
           onClick={submit}
@@ -49,7 +49,7 @@ export default function UploadForm({
           {busy ? "Загрузка…" : "Загрузить выписку"}
         </button>
       </div>
-      {file && <p className="mt-2 text-xs text-[#5C7268]">Выбран: {file.name}</p>}
+      {file && <p className="mt-2 text-xs text-[var(--text-4)]">Выбран: {file.name}</p>}
     </div>
   );
 }

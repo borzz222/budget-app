@@ -84,22 +84,22 @@ export default function FinancialChatWidget() {
       )}
 
       {open && (
-        <div className="fixed bottom-5 right-5 z-40 flex h-[500px] max-h-[70vh] w-[370px] max-w-[calc(100vw-2rem)] flex-col overflow-hidden rounded-3xl border border-white/[0.10] bg-[#0A1611]/95 shadow-2xl backdrop-blur-2xl">
-          <div className="flex items-center justify-between bg-gradient-to-r from-[#0F2A1F] to-[#123A2A] px-5 py-3.5 text-[#F2F5F3]">
+        <div className="fixed bottom-5 right-5 z-40 flex h-[500px] max-h-[70vh] w-[370px] max-w-[calc(100vw-2rem)] flex-col overflow-hidden rounded-3xl border border-[var(--border-strong)] bg-[var(--overlay)] shadow-[var(--shadow-pop)] backdrop-blur-2xl">
+          <div className="flex items-center justify-between bg-gradient-to-r from-[#0F3D2E] to-[#12603F] px-5 py-3.5 text-white">
             <p className="text-sm font-semibold">Финансовый консультант</p>
             <button
               onClick={() => setOpen(false)}
               aria-label="Закрыть чат"
-              className="rounded-full px-2 text-lg leading-none text-[#8FA79A] transition hover:bg-white/10 hover:text-[#F2F5F3]"
+              className="rounded-full px-2 text-lg leading-none text-[var(--text-3)] transition hover:bg-[var(--surface-3)] hover:text-[var(--text)]"
             >
               ×
             </button>
           </div>
 
-          <div ref={scrollRef} className="flex-1 space-y-3 overflow-y-auto bg-[#050D0A]/60 p-4">
+          <div ref={scrollRef} className="flex-1 space-y-3 overflow-y-auto bg-white p-4">
             {history.length === 0 && !busy && (
-              <div className="max-w-[85%] rounded-2xl rounded-tl-md border border-white/[0.08] bg-white/[0.05] p-3">
-                <p className="text-sm leading-relaxed text-[#F2F5F3]">
+              <div className="max-w-[85%] rounded-2xl rounded-tl-md border border-[var(--border)] bg-[var(--surface-3)] p-3">
+                <p className="text-sm leading-relaxed text-[var(--text)]">
                   Привет! Я ваш финансовый консультант. Спросите меня о ваших
                   тратах, доходах или как сэкономить.
                 </p>
@@ -112,7 +112,7 @@ export default function FinancialChatWidget() {
                   className={`max-w-[85%] rounded-2xl p-3 shadow-sm ${
                     m.role === "user"
                       ? "rounded-br-md bg-gradient-to-br from-[#A8CF38] to-[#21A038] text-[#050D0A] font-medium"
-                      : "rounded-tl-md border border-white/[0.08] bg-white/[0.05] text-[#F2F5F3]"
+                      : "rounded-tl-md border border-[var(--border)] bg-white text-[var(--text)]"
                   }`}
                 >
                   <p className="whitespace-pre-wrap text-sm leading-relaxed">{m.content}</p>
@@ -122,7 +122,7 @@ export default function FinancialChatWidget() {
 
             {busy && (
               <div className="flex justify-start">
-                <div className="flex items-center gap-1.5 rounded-2xl rounded-tl-md border border-white/[0.08] bg-white/[0.05] p-3">
+                <div className="flex items-center gap-1.5 rounded-2xl rounded-tl-md border border-[var(--border)] bg-[var(--surface-3)] p-3">
                   <span className="h-2 w-2 animate-bounce rounded-full bg-[#5C7268]" />
                   <span className="h-2 w-2 animate-bounce rounded-full bg-[#5C7268] [animation-delay:150ms]" />
                   <span className="h-2 w-2 animate-bounce rounded-full bg-[#5C7268] [animation-delay:300ms]" />
@@ -131,7 +131,7 @@ export default function FinancialChatWidget() {
             )}
           </div>
 
-          <div className="border-t border-white/[0.08] p-3">
+          <div className="border-t border-[var(--border)] p-3">
             <div className="flex items-end gap-2">
               <textarea
                 ref={inputRef}
@@ -147,7 +147,7 @@ export default function FinancialChatWidget() {
                   }
                 }}
                 placeholder="Спросите о финансах…"
-                className="max-h-28 w-full resize-none rounded-2xl border border-white/[0.10] bg-[#050D0A]/70 px-3 py-2 text-sm text-[#F2F5F3] placeholder-[#5C7268] outline-none transition focus:border-[#3FC8A0] [color-scheme:dark] disabled:opacity-60"
+                className="max-h-28 w-full resize-none rounded-2xl border border-[var(--border-strong)] bg-[var(--field)] px-3 py-2 text-sm text-[var(--text)] placeholder-[var(--text-4)] outline-none transition focus:border-[var(--accent-border)] disabled:opacity-60"
               />
               <button
                 onClick={send}
@@ -167,7 +167,7 @@ export default function FinancialChatWidget() {
               </button>
             </div>
             {input.length > COUNTER_FROM && (
-              <p className="mt-1 text-right text-xs text-[#5C7268]">
+              <p className="mt-1 text-right text-xs text-[var(--text-4)]">
                 {input.length}/{MAX_LENGTH}
               </p>
             )}
