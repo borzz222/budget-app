@@ -108,7 +108,7 @@ export default function ReceiptUploader({
   }
 
   return (
-    <div className="mt-4 border-t border-neutral-100 pt-4">
+    <div className="mt-4 border-t border-white/[0.08] pt-4">
       <div className="flex items-center gap-3">
         <input
           ref={inputRef}
@@ -120,64 +120,64 @@ export default function ReceiptUploader({
         <button
           onClick={() => inputRef.current?.click()}
           disabled={statementId == null || scanning}
-          className="flex items-center gap-2 rounded-full border border-neutral-300 px-4 py-2 text-sm font-medium text-neutral-700 transition hover:bg-white disabled:cursor-not-allowed disabled:opacity-50"
+          className="flex items-center gap-2 rounded-full border border-white/[0.12] px-4 py-2 text-sm font-medium text-[#C4D4CB] transition hover:bg-white/[0.07] disabled:cursor-not-allowed disabled:opacity-40"
         >
           <ReceiptIcon />
           {scanning ? "Распознаём чек…" : "Загрузить чек"}
         </button>
       </div>
-      <p className="mt-1.5 text-xs text-neutral-400">JPG или PNG, не HEIC</p>
+      <p className="mt-1.5 text-xs text-[#5C7268]">JPG или PNG, не HEIC</p>
 
       {preview && !scanning && (
-        <div className="mt-4 space-y-3 rounded-2xl bg-neutral-50 p-4">
+        <div className="mt-4 space-y-3 rounded-2xl border border-white/[0.08] bg-white/[0.04] p-4">
           <div className="grid grid-cols-2 gap-3">
             <label className="block">
-              <span className="mb-1 block text-xs text-neutral-500">Дата</span>
+              <span className="mb-1 block text-xs text-[#8FA79A]">Дата</span>
               <input
                 type="date"
                 value={date}
                 onChange={(e) => setDate(e.target.value)}
-                className="w-full rounded-2xl border border-neutral-200 bg-white px-3 py-2 text-sm text-neutral-800 outline-none focus:border-[#21A038]"
+                className="w-full rounded-2xl border border-white/[0.10] bg-[#050D0A]/70 px-3 py-2 text-sm text-[#F2F5F3] placeholder-[#5C7268] outline-none transition focus:border-[#3FC8A0] [color-scheme:dark]"
               />
             </label>
             <label className="block">
-              <span className="mb-1 block text-xs text-neutral-500">Сумма, ₽</span>
+              <span className="mb-1 block text-xs text-[#8FA79A]">Сумма, ₽</span>
               <input
                 type="number"
                 min={0}
                 step="0.01"
                 value={amount}
                 onChange={(e) => setAmount(e.target.value)}
-                className="w-full rounded-2xl border border-neutral-200 bg-white px-3 py-2 text-sm text-neutral-800 outline-none focus:border-[#21A038]"
+                className="w-full rounded-2xl border border-white/[0.10] bg-[#050D0A]/70 px-3 py-2 text-sm text-[#F2F5F3] placeholder-[#5C7268] outline-none transition focus:border-[#3FC8A0] [color-scheme:dark]"
               />
             </label>
           </div>
           <label className="block">
-            <span className="mb-1 block text-xs text-neutral-500">Магазин</span>
+            <span className="mb-1 block text-xs text-[#8FA79A]">Магазин</span>
             <input
               type="text"
               value={merchant}
               onChange={(e) => setMerchant(e.target.value)}
-              className="w-full rounded-2xl border border-neutral-200 bg-white px-3 py-2 text-sm text-neutral-800 outline-none focus:border-[#21A038]"
+              className="w-full rounded-2xl border border-white/[0.10] bg-[#050D0A]/70 px-3 py-2 text-sm text-[#F2F5F3] placeholder-[#5C7268] outline-none transition focus:border-[#3FC8A0] [color-scheme:dark]"
             />
           </label>
           <label className="block">
-            <span className="mb-1 block text-xs text-neutral-500">Категория</span>
+            <span className="mb-1 block text-xs text-[#8FA79A]">Категория</span>
             <select
               value={category}
               onChange={(e) => setCategory(e.target.value)}
-              className="w-full rounded-2xl border border-neutral-200 bg-white px-3 py-2 text-sm text-neutral-800 outline-none focus:border-[#21A038]"
+              className="w-full rounded-2xl border border-white/[0.10] bg-[#050D0A]/70 px-3 py-2 text-sm text-[#F2F5F3] placeholder-[#5C7268] outline-none transition focus:border-[#3FC8A0] [color-scheme:dark]"
             >
-              <option value="">— выберите —</option>
+              <option value="" className="bg-[#0D1F18] text-[#F2F5F3]">— выберите —</option>
               {categoryOptions.map((c) => (
-                <option key={c} value={c}>
+                <option key={c} value={c} className="bg-[#0D1F18] text-[#F2F5F3]">
                   {c}
                 </option>
               ))}
             </select>
           </label>
           {preview.category_confidence < 0.5 && (
-            <p className="rounded-2xl bg-amber-50 p-3 text-xs leading-relaxed text-amber-800">
+            <p className="rounded-2xl border border-[#A8CF38]/25 bg-[#A8CF38]/[0.08] p-3 text-xs leading-relaxed text-[#D5E88A]">
               Низкая уверенность, проверьте категорию
             </p>
           )}
@@ -185,14 +185,14 @@ export default function ReceiptUploader({
             <button
               onClick={confirm}
               disabled={saving}
-              className="flex-1 rounded-full bg-[#21A038] py-2 text-sm font-medium text-white transition hover:bg-[#1c8c30] disabled:cursor-not-allowed disabled:opacity-50"
+              className="flex-1 py-2 text-sm rounded-full bg-gradient-to-r from-[#A8CF38] to-[#21A038] text-[#050D0A] font-semibold shadow-[0_0_28px_-8px_#21A038] transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-40 disabled:shadow-none"
             >
               {saving ? "Сохраняем…" : "Подтвердить и сохранить"}
             </button>
             <button
               onClick={cancel}
               disabled={saving}
-              className="rounded-full border border-neutral-200 px-4 py-2 text-sm font-medium text-neutral-600 transition hover:bg-white disabled:opacity-50"
+              className="rounded-full border border-white/[0.10] px-4 py-2 text-sm font-medium text-[#8FA79A] transition hover:bg-white/[0.07] disabled:opacity-40"
             >
               Отмена
             </button>

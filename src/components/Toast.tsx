@@ -65,16 +65,16 @@ export function Toaster() {
         <button
           key={t.id}
           onClick={() => dismiss(t.id)}
-          className={`pointer-events-auto flex items-start gap-3 rounded-2xl border bg-white p-4 text-left shadow-lg transition hover:opacity-90 ${
-            t.kind === "success" ? "border-emerald-200" : "border-red-200"
+          className={`pointer-events-auto flex items-start gap-3 rounded-2xl border bg-[#0D1F18]/95 p-4 text-left shadow-2xl backdrop-blur-xl transition hover:bg-[#12291F]/95 ${
+            t.kind === "success" ? "border-[#3FC8A0]/40" : "border-[#FF6B6B]/40"
           }`}
         >
           <span
             className={`mt-0.5 h-2.5 w-2.5 shrink-0 rounded-full ${
-              t.kind === "success" ? "bg-[#21A038]" : "bg-red-500"
+              t.kind === "success" ? "bg-[#3FC8A0]" : "bg-[#FF6B6B]"
             }`}
           />
-          <span className="text-sm leading-snug text-neutral-800">{t.text}</span>
+          <span className="text-sm leading-snug text-[#F2F5F3]">{t.text}</span>
         </button>
       ))}
     </div>
