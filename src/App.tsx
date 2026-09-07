@@ -394,15 +394,35 @@ export default function App() {
     localStorage.setItem("theme", theme);
   }, [theme]);
 
-  const axisTick = { fontSize: 12, fill: "var(--chart-axis)" };
-  const tooltipStyle = {
-    background: "var(--overlay)",
-    border: "1px solid var(--border-strong)",
-    borderRadius: 12,
-    color: "var(--text)",
-    fontSize: 13,
-    backdropFilter: "blur(12px)",
+  const isDark = theme === "dark";
+  const chartColors = {
+    axis: isDark ? "#5C7268" : "#94A29A",
+    line: isDark ? "#A8CF38" : "#21A366",
+    text: isDark ? "#F2F5F3" : "#17231D",
+    label: isDark ? "#8FA79A" : "#708078",
+    panel: isDark ? "#0D1A14" : "#FFFFFF",
+    stroke: isDark ? "rgba(255,255,255,0.14)" : "rgba(23,35,29,0.10)",
+    cursorFill: isDark ? "rgba(168,207,56,0.10)" : "rgba(33,163,102,0.08)",
   };
+
+  const axisTick = { fontSize: 12, fill: chartColors.axis };
+  const tooltipStyle = {
+    background: chartColors.panel,
+    border: `1px solid ${chartColors.stroke}`,
+    borderRadius: 12,
+    boxShadow: isDark
+      ? "0 12px 32px -12px rgba(0,0,0,0.8)"
+      : "0 8px 28px -8px rgba(23,35,29,0.15)",
+    color: chartColors.text,
+    fontSize: 13,
+    padding: "10px 12px",
+  };
+  const tooltipLabelStyle = {
+    color: chartColors.label,
+    fontSize: 12,
+    marginBottom: 4,
+  };
+  const tooltipItemStyle = { color: chartColors.text, fontWeight: 600 };
 
   const daysLeft = 17;
   const forecastDate = "21 сентября";
@@ -618,8 +638,8 @@ export default function App() {
                 <AreaChart data={chartWeekly} margin={{ top: 5, right: 5, left: -20, bottom: 0 }}>
                   <defs>
                     <linearGradient id="g" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="var(--chart-line)" stopOpacity="var(--chart-fill-opacity)" />
-                      <stop offset="100%" stopColor="var(--chart-line)" stopOpacity={0} />
+                      <stop offset="0%" stopColor={chartColors.line} stopOpacity={isDark ? 0.4 : 0.18} />
+                      <stop offset="100%" stopColor={chartColors.line} stopOpacity={0} />
                     </linearGradient>
                   </defs>
                   <XAxis
@@ -637,11 +657,14 @@ export default function App() {
                     tickFormatter={(v) => v / 1000 + "к"}
                   />
                   <Tooltip
-                    cursor={{ stroke: "var(--chart-line)", strokeWidth: 1, strokeDasharray: "4 4" }}
+                    cursor={{ stroke: chartColors.line, strokeWidth: 1.5, strokeDasharray: "4 4", strokeOpacity: 0.6 }}
                     formatter={(v) => [money(Number(v ?? 0)), "Потрачено"]}
                     contentStyle={tooltipStyle}
+                    labelStyle={tooltipLabelStyle}
+                    itemStyle={tooltipItemStyle}
+                    animationDuration={200}
                   />
-                  <Area type="monotone" dataKey="sum" stroke="var(--chart-line)" strokeWidth={2.5} fill="url(#g)" />
+                  <Area type="monotone" dataKey="sum" stroke={chartColors.line} strokeWidth={2.5} fill="url(#g)" />
                 </AreaChart>
               </ResponsiveContainer>
             </div>
@@ -667,13 +690,16 @@ export default function App() {
                     tick={axisTick}
                   />
                   <Tooltip
-                    cursor={{ fill: "var(--surface-3)" }}
+                    cursor={{ fill: chartColors.cursorFill, radius: 6 }}
                     formatter={(v) => [money(Number(v ?? 0)), "Сумма"]}
                     contentStyle={tooltipStyle}
+                    labelStyle={tooltipLabelStyle}
+                    itemStyle={tooltipItemStyle}
+                    animationDuration={200}
                   />
                   <Bar dataKey="sum" radius={[0, 6, 6, 0]} barSize={14}>
                     {chartCategories.map((c, i) => (
-                      <Cell key={i} fill={c.trend > 50 ? "#21A038" : "#CBE7D3"} />
+                      <Cell key={i} fill={c.trend > 50 ? chartColors.line : (isDark ? "rgba(168,207,56,0.35)" : "#CBE7D3")} />
                     ))}
                   </Bar>
                 </BarChart>
@@ -760,6 +786,9 @@ export default function App() {
                     <Tooltip
                       formatter={(v) => money(Number(v ?? 0))}
                       contentStyle={tooltipStyle}
+                      labelStyle={tooltipLabelStyle}
+                      itemStyle={tooltipItemStyle}
+                      animationDuration={200}
                     />
                   </PieChart>
                 </ResponsiveContainer>
