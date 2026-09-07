@@ -151,7 +151,7 @@ export default function TransactionsTable({
         <select
           value={filters.category}
           onChange={(e) => setFilter("category", e.target.value)}
-          className="rounded-2xl border border-[var(--border)] bg-white text-[var(--text)] placeholder-[var(--text-4)] outline-none transition focus:border-[var(--accent-border)] px-3 py-2 text-sm"
+          className="rounded-2xl border border-[var(--border)] bg-[var(--field)] text-[var(--text)] placeholder-[var(--text-4)] outline-none transition focus:border-[var(--accent-border)] px-3 py-2 text-sm"
         >
           <option value="" className="bg-[var(--field)] text-[var(--text)]">Все категории</option>
           {categories.map((c) => (
@@ -163,7 +163,7 @@ export default function TransactionsTable({
         <select
           value={filters.type}
           onChange={(e) => setFilter("type", e.target.value)}
-          className="rounded-2xl border border-[var(--border)] bg-white text-[var(--text)] placeholder-[var(--text-4)] outline-none transition focus:border-[var(--accent-border)] px-3 py-2 text-sm"
+          className="rounded-2xl border border-[var(--border)] bg-[var(--field)] text-[var(--text)] placeholder-[var(--text-4)] outline-none transition focus:border-[var(--accent-border)] px-3 py-2 text-sm"
         >
           {TYPE_OPTIONS.map((o) => (
             <option key={o.value} value={o.value} className="bg-[var(--field)] text-[var(--text)]">
@@ -175,13 +175,13 @@ export default function TransactionsTable({
           type="date"
           value={filters.date_from}
           onChange={(e) => setFilter("date_from", e.target.value)}
-          className="rounded-2xl border border-[var(--border)] bg-white text-[var(--text)] placeholder-[var(--text-4)] outline-none transition focus:border-[var(--accent-border)] px-3 py-2 text-sm"
+          className="rounded-2xl border border-[var(--border)] bg-[var(--field)] text-[var(--text)] placeholder-[var(--text-4)] outline-none transition focus:border-[var(--accent-border)] px-3 py-2 text-sm"
         />
         <input
           type="date"
           value={filters.date_to}
           onChange={(e) => setFilter("date_to", e.target.value)}
-          className="rounded-2xl border border-[var(--border)] bg-white text-[var(--text)] placeholder-[var(--text-4)] outline-none transition focus:border-[var(--accent-border)] px-3 py-2 text-sm"
+          className="rounded-2xl border border-[var(--border)] bg-[var(--field)] text-[var(--text)] placeholder-[var(--text-4)] outline-none transition focus:border-[var(--accent-border)] px-3 py-2 text-sm"
         />
         <input
           type="number"
@@ -189,7 +189,7 @@ export default function TransactionsTable({
           placeholder="Сумма от"
           value={filters.amount_min}
           onChange={(e) => setFilter("amount_min", e.target.value)}
-          className="rounded-2xl border border-[var(--border)] bg-white text-[var(--text)] placeholder-[var(--text-4)] outline-none transition focus:border-[var(--accent-border)] px-3 py-2 text-sm"
+          className="rounded-2xl border border-[var(--border)] bg-[var(--field)] text-[var(--text)] placeholder-[var(--text-4)] outline-none transition focus:border-[var(--accent-border)] px-3 py-2 text-sm"
         />
         <input
           type="number"
@@ -197,14 +197,14 @@ export default function TransactionsTable({
           placeholder="Сумма до"
           value={filters.amount_max}
           onChange={(e) => setFilter("amount_max", e.target.value)}
-          className="rounded-2xl border border-[var(--border)] bg-white text-[var(--text)] placeholder-[var(--text-4)] outline-none transition focus:border-[var(--accent-border)] px-3 py-2 text-sm"
+          className="rounded-2xl border border-[var(--border)] bg-[var(--field)] text-[var(--text)] placeholder-[var(--text-4)] outline-none transition focus:border-[var(--accent-border)] px-3 py-2 text-sm"
         />
         <input
           type="search"
           placeholder="Поиск по описанию…"
           value={searchInput}
           onChange={(e) => setSearchInput(e.target.value)}
-          className="col-span-2 rounded-2xl border border-[var(--border)] bg-white text-[var(--text)] placeholder-[var(--text-4)] outline-none transition focus:border-[var(--accent-border)] px-3 py-2 text-sm md:col-span-2"
+          className="col-span-2 rounded-2xl border border-[var(--border)] bg-[var(--field)] text-[var(--text)] placeholder-[var(--text-4)] outline-none transition focus:border-[var(--accent-border)] px-3 py-2 text-sm md:col-span-2"
         />
       </div>
 
@@ -252,7 +252,7 @@ export default function TransactionsTable({
           <button
             disabled={currentPage <= 1}
             onClick={() => setPage((p) => Math.max(1, p - 1))}
-            className="rounded-full border border-[var(--border-strong)] px-4 py-1.5 text-xs font-medium text-[var(--text-2)] transition hover:bg-white disabled:opacity-30"
+            className="rounded-full border border-[var(--border-strong)] px-4 py-1.5 text-xs font-medium text-[var(--text-2)] transition hover:bg-[var(--surface-3)] disabled:opacity-30"
           >
             Назад
           </button>
@@ -262,7 +262,7 @@ export default function TransactionsTable({
           <button
             disabled={currentPage >= totalPages}
             onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-            className="rounded-full border border-[var(--border-strong)] px-4 py-1.5 text-xs font-medium text-[var(--text-2)] transition hover:bg-white disabled:opacity-30"
+            className="rounded-full border border-[var(--border-strong)] px-4 py-1.5 text-xs font-medium text-[var(--text-2)] transition hover:bg-[var(--surface-3)] disabled:opacity-30"
           >
             Вперёд
           </button>

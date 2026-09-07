@@ -96,7 +96,7 @@ export default function FinancialChatWidget() {
             </button>
           </div>
 
-          <div ref={scrollRef} className="flex-1 space-y-3 overflow-y-auto bg-white p-4">
+          <div ref={scrollRef} className="flex-1 space-y-3 overflow-y-auto bg-[var(--surface-2)] p-4">
             {history.length === 0 && !busy && (
               <div className="max-w-[85%] rounded-2xl rounded-tl-md border border-[var(--border)] bg-[var(--surface-3)] p-3">
                 <p className="text-sm leading-relaxed text-[var(--text)]">
@@ -112,7 +112,7 @@ export default function FinancialChatWidget() {
                   className={`max-w-[85%] rounded-2xl p-3 shadow-sm ${
                     m.role === "user"
                       ? "rounded-br-md bg-gradient-to-br from-[#A8CF38] to-[#21A038] text-[#050D0A] font-medium"
-                      : "rounded-tl-md border border-[var(--border)] bg-white text-[var(--text)]"
+                      : "rounded-tl-md border border-[var(--border)] bg-[var(--field)] text-[var(--text)]"
                   }`}
                 >
                   <p className="whitespace-pre-wrap text-sm leading-relaxed">{m.content}</p>

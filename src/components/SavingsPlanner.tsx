@@ -68,7 +68,7 @@ export default function SavingsPlanner({
           onKeyDown={(e) => {
             if (e.key === "Enter") submit();
           }}
-          className="w-full rounded-2xl border border-[var(--border)] bg-white text-[var(--text)] placeholder-[var(--text-4)] outline-none transition focus:border-[var(--accent-border)] px-4 py-2.5 text-sm"
+          className="w-full rounded-2xl border border-[var(--border)] bg-[var(--field)] text-[var(--text)] placeholder-[var(--text-4)] outline-none transition focus:border-[var(--accent-border)] px-4 py-2.5 text-sm"
         />
         <button
           onClick={submit}

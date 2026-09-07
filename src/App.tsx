@@ -476,7 +476,7 @@ export default function App() {
           <div className="flex items-center gap-2">
             {SHOW_LEGACY_WIDGETS &&
               (card ? (
-                <div className="flex items-center gap-3 rounded-full border border-[var(--border-strong)] bg-white px-4 py-2">
+                <div className="flex items-center gap-3 rounded-full border border-[var(--border-strong)] bg-[var(--field)] px-4 py-2">
                   <span className="h-2 w-2 rounded-full bg-[#21A038]" />
                   <div className="text-left">
                     <p className="text-xs leading-tight text-[var(--text-4)]">{card.name}</p>
