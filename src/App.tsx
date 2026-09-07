@@ -92,41 +92,36 @@ const xTickInterval = (length: number) =>
 const INSIGHT_ACCENT: Record<string, { dot: string; text: string }> = {
   аномалия: { dot: "bg-orange-500", text: "text-orange-700" },
   подписка: { dot: "bg-sky-500", text: "text-sky-700" },
-  рост_расходов: { dot: "bg-red-500", text: "text-red-600" },
-  главная_категория: { dot: "bg-[#21A038]", text: "text-[#1c8c30]" },
+  рост_расходов: { dot: "bg-[#FF6B6B]/100", text: "text-[#FF6B6B]" },
+  главная_категория: { dot: "bg-[#21A038]", text: "text-[#3FC8A0]" },
   временной_паттерн: { dot: "bg-violet-500", text: "text-violet-700" },
 };
 
 const PRIORITY_STYLE: Record<string, { badge: string; amount: string }> = {
-  high: { badge: "bg-red-50 text-red-600", amount: "text-red-600" },
-  medium: { badge: "bg-amber-50 text-amber-700", amount: "text-neutral-900" },
-  low: { badge: "bg-neutral-100 text-neutral-500", amount: "text-neutral-500" },
+  high: { badge: "bg-[#FF6B6B]/10 text-[#FF6B6B]", amount: "text-[#FF6B6B]" },
+  medium: { badge: "bg-amber-50 text-amber-700", amount: "text-[#F2F5F3]" },
+  low: { badge: "bg-white/[0.06] text-[#8FA79A]", amount: "text-[#8FA79A]" },
 };
 /* ---------------- ЛОГОТИПЫ ---------------- */
 
 // Вариант 1: круг, поделённый на доли
-function MarkPie() {
-  return (
-    <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none">
-      <path d="M12 2.5A9.5 9.5 0 0 1 21.5 12H12z" fill="white" />
-      <path d="M12 12h9.5A9.5 9.5 0 0 1 12 21.5z" fill="white" opacity="0.75" />
-      <path d="M12 12v9.5A9.5 9.5 0 0 1 2.5 12z" fill="white" opacity="0.5" />
-      <path d="M12 12H2.5A9.5 9.5 0 0 1 12 2.5z" fill="white" opacity="0.3" />
-    </svg>
-  );
-}
 
 function Logo() {
   return (
     <div className="flex items-center gap-3">
-      <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[#21A038]">
-        <MarkPie />
+      <div className="relative flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-[#A8CF38] via-[#3FC8A0] to-[#21A038]">
+        <div className="absolute inset-0 rounded-2xl bg-[#A8CF38] opacity-60 blur-xl" />
+        <svg viewBox="0 0 24 24" className="relative h-6 w-6" fill="none">
+          <path d="M4 9h16M4 15h16" stroke="#071410" strokeWidth="2.5" strokeLinecap="round" />
+          <circle cx="8" cy="9" r="2.5" fill="#071410" />
+          <circle cx="16" cy="15" r="2.5" fill="#071410" />
+        </svg>
       </div>
       <div>
-        <p className="text-lg font-semibold leading-tight tracking-tight">СберПоровну</p>
-        <p className="text-xs leading-tight text-neutral-400">
-          Прототип для экосистемы Сбера
+        <p className="text-xl font-bold leading-tight tracking-tight text-[#F2F5F3]">
+          FinBalance
         </p>
+        <p className="text-xs leading-tight text-[#5C7268]">Общий бюджет</p>
       </div>
     </div>
   );
@@ -135,7 +130,7 @@ function Logo() {
 function Badge({ value }: { value: number }) {
   if (value === 0) {
     return (
-      <span className="rounded-full bg-neutral-100 px-2 py-0.5 text-xs font-medium text-neutral-500">
+      <span className="rounded-full bg-white/[0.06] px-2 py-0.5 text-xs font-medium text-[#8FA79A]">
         стабильно
       </span>
     );
@@ -144,7 +139,7 @@ function Badge({ value }: { value: number }) {
   return (
     <span
       className={`rounded-full px-2 py-0.5 text-xs font-medium ${
-        up ? "bg-red-50 text-red-600" : "bg-emerald-50 text-emerald-700"
+        up ? "bg-[#FF6B6B]/10 text-[#FF6B6B]" : "bg-[#3FC8A0]/10 text-[#3FC8A0]"
       }`}
     >
       {up ? "+" : ""}
@@ -166,16 +161,20 @@ function Stat({
 }) {
   return (
     <div
-      className={`flex items-baseline justify-between gap-3 rounded-3xl px-5 py-4 ${
-        dark ? "bg-[#0F3D2E] text-white" : "bg-white text-neutral-900"
+      className={`flex items-baseline justify-between gap-3 rounded-3xl px-5 py-4 backdrop-blur-2xl ${
+        dark
+          ? "bg-gradient-to-br from-[#A8CF38] via-[#3FC8A0] to-[#21A038] text-[#050D0A]"
+          : "border border-white/[0.08] bg-gradient-to-b from-white/[0.07] to-white/[0.02]"
       }`}
     >
       <div>
-        <p className={`text-base ${dark ? "text-white/80" : "text-neutral-600"}`}>{label}</p>
-        <p className="mt-1 text-2xl font-semibold tracking-tight">{value}</p>
+        <p className={`text-sm font-medium ${dark ? "text-[#0A1F14]/70" : "text-[#8FA79A]"}`}>{label}</p>
+        <p className={`mt-1 text-3xl font-bold tracking-tight ${dark ? "text-[#050D0A]" : "text-[#F2F5F3]"}`}>
+          {value}
+        </p>
       </div>
       {hint && (
-        <p className={`text-base ${dark ? "text-white/70" : "text-neutral-500"}`}>{hint}</p>
+        <p className={`text-sm ${dark ? "text-[#0A1F14]/60" : "text-[#5C7268]"}`}>{hint}</p>
       )}
     </div>
   );
@@ -193,11 +192,11 @@ function Card({
   className?: string;
 }) {
   return (
-    <div className={`rounded-3xl bg-white p-6 ${className}`}>
+    <div className={`rounded-3xl border border-white/[0.08] bg-gradient-to-b from-white/[0.07] to-white/[0.02] p-6 backdrop-blur-2xl ${className}`}>
       {title && (
         <div className="mb-5 flex items-baseline justify-between">
-          <h2 className="text-base font-semibold text-neutral-900">{title}</h2>
-          {action && <span className="text-base text-neutral-500">{action}</span>}
+          <h2 className="text-base font-semibold text-[#F2F5F3]">{title}</h2>
+          {action && <span className="text-base text-[#8FA79A]">{action}</span>}
         </div>
       )}
       {children}
@@ -352,7 +351,14 @@ export default function App() {
   const forecastDate = "21 сентября";
 
   return (
-    <div className="min-h-screen bg-[#EFEEEA] px-4 py-5 font-sans text-neutral-900 md:px-8 md:py-7">
+    <div className="min-h-screen relative isolate bg-[#050D0A] px-4 py-5 font-sans text-[#F2F5F3] md:px-8 md:py-7">
+      {/* ambient glow */}
+      <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
+        <div className="absolute -right-40 -top-48 h-[38rem] w-[38rem] rounded-full bg-[#21A038] opacity-[0.20] blur-[130px]" />
+        <div className="absolute -left-48 top-1/3 h-[34rem] w-[34rem] rounded-full bg-[#3FC8A0] opacity-[0.12] blur-[150px]" />
+        <div className="absolute -bottom-40 left-1/2 h-[30rem] w-[44rem] -translate-x-1/2 rounded-full bg-[#A8CF38] opacity-[0.08] blur-[140px]" />
+      </div>
+      <div className="relative z-10">
       <Toaster />
       <FinancialChatWidget />
             <input
@@ -367,22 +373,22 @@ export default function App() {
         <div className="flex flex-col gap-3">
           <Logo />
           <div>
-            <h1 className="text-lg font-medium tracking-tight text-neutral-700">
+            <h1 className="text-lg font-medium tracking-tight text-[#C4D4CB]">
               Квартира на Мира, 19
             </h1>
-            <p className="mt-0.5 text-sm text-neutral-500">Сентябрь · 4 участника</p>
+            <p className="mt-0.5 text-sm text-[#8FA79A]">Сентябрь · 4 участника</p>
           </div>
         </div>
 
         <div className="flex flex-col items-start gap-3 md:items-end">
           <div className="flex items-center gap-4">
             <div className="text-right">
-              <p className="text-xs text-neutral-500">
+              <p className="text-xs text-[#8FA79A]">
                 {myBalance < 0 ? "Ты должен" : "Тебе должны"}
               </p>
               <p
                 className={`text-xl font-semibold tracking-tight ${
-                  myBalance < 0 ? "text-red-600" : "text-[#1c8c30]"
+                  myBalance < 0 ? "text-[#FF6B6B]" : "text-[#3FC8A0]"
                 }`}
               >
                 {money(Math.abs(myBalance))}
@@ -395,7 +401,7 @@ export default function App() {
                     key={m.id}
                     title={`${m.name} — сменить аватар`}
                     onClick={() => pickAvatar(m.id)}
-                    className="flex h-9 w-9 items-center justify-center overflow-hidden rounded-full border-2 border-[#EFEEEA] bg-cover bg-center text-xs font-semibold text-white transition hover:scale-110"
+                    className="flex h-9 w-9 items-center justify-center overflow-hidden rounded-full border-2 border-[#071410] bg-cover bg-center text-xs font-semibold text-white transition hover:scale-110"
                     style={
                       avatars[m.id]
                         ? { backgroundImage: `url(${avatars[m.id]})` }
@@ -412,15 +418,15 @@ export default function App() {
           <div className="flex items-center gap-2">
             {SHOW_LEGACY_WIDGETS &&
               (card ? (
-                <div className="flex items-center gap-3 rounded-full bg-white px-4 py-2">
+                <div className="flex items-center gap-3 rounded-full bg-[#0D1F18] border border-[#1C3329] px-4 py-2">
                   <span className="h-2 w-2 rounded-full bg-[#21A038]" />
                   <div className="text-left">
-                    <p className="text-xs leading-tight text-neutral-400">{card.name}</p>
+                    <p className="text-xs leading-tight text-[#5C7268]">{card.name}</p>
                     <p className="text-sm font-semibold leading-tight">{money(card.balance)}</p>
                   </div>
                   <button
                     onClick={() => setCard(null)}
-                    className="ml-1 text-xs text-neutral-400 hover:text-neutral-600"
+                    className="ml-1 text-xs text-[#5C7268] hover:text-[#8FA79A]"
                   >
                     отвязать
                   </button>
@@ -428,14 +434,14 @@ export default function App() {
               ) : (
                 <button
                   onClick={() => setCard({ name: "СберКарта •••• 4417", balance: 42300 })}
-                  className="rounded-full border border-neutral-300 px-4 py-2 text-sm font-medium text-neutral-700 transition hover:bg-white"
+                  className="rounded-full border border-[#1C3329] px-4 py-2 text-sm font-medium text-[#C4D4CB] transition hover:bg-white/[0.06]"
                 >
                   Привязать карту
                 </button>
               ))}
             <button
               disabled
-              className="cursor-not-allowed rounded-full bg-[#21A038] px-5 py-2.5 text-sm font-medium text-white opacity-50"
+              className="cursor-not-allowed rounded-full bg-gradient-to-r from-[#A8CF38] to-[#21A038] px-5 py-2.5 text-sm font-semibold text-[#050D0A] opacity-50"
             >
               Добавить трату
             </button>
@@ -444,23 +450,23 @@ export default function App() {
       </header>
 
       <div className="mb-4 grid grid-cols-1 gap-4 md:gap-5 lg:mb-5 lg:grid-cols-2">
-        <div className="rounded-3xl bg-white p-6">
+        <div className="rounded-3xl border border-white/[0.08] bg-gradient-to-b from-white/[0.07] to-white/[0.02] p-6 backdrop-blur-2xl">
           <UploadForm onUploaded={handleUploaded} />
           <ReceiptUploader statementId={currentId} onConfirmed={handleConfirmed} />
-          <div className="mt-4 border-t border-neutral-100 pt-4">
+          <div className="mt-4 border-t border-[#1C3329] pt-4">
             <ManualTransactionForm statementId={currentId} onSaved={handleConfirmed} />
           </div>
         </div>
-        <div className="rounded-3xl bg-white p-6">
+        <div className="rounded-3xl border border-white/[0.08] bg-gradient-to-b from-white/[0.07] to-white/[0.02] p-6 backdrop-blur-2xl">
           <StatementSelector
             statements={statements}
             currentId={currentId}
             onSelect={setCurrentId}
           />
-          {loading && <p className="mt-3 text-sm text-neutral-400">Загрузка данных…</p>}
-          {apiError && <p className="mt-3 text-sm text-red-600">{apiError}</p>}
+          {loading && <p className="mt-3 text-sm text-[#5C7268]">Загрузка данных…</p>}
+          {apiError && <p className="mt-3 text-sm text-[#FF6B6B]">{apiError}</p>}
           {currentStatement && (
-            <p className="mt-3 text-xs text-neutral-400">
+            <p className="mt-3 text-xs text-[#5C7268]">
               {currentStatement.transactions_count} операций
               {currentStatement.period_from && currentStatement.period_to
                 ? ` · ${currentStatement.period_from} — ${currentStatement.period_to}`
@@ -496,13 +502,13 @@ export default function App() {
                   <div
                     key={i}
                     className={`flex flex-col gap-3 rounded-2xl px-4 py-3 sm:flex-row sm:items-center sm:justify-between ${
-                      mine ? "bg-[#F1F8F3]" : "bg-neutral-50"
+                      mine ? "border border-[#3FC8A0]/25 bg-[#3FC8A0]/[0.10]" : "border border-white/[0.06] bg-white/[0.03]"
                     }`}
                   >
                     <div className="flex items-center gap-3">
                       <span className="text-sm font-medium">{s.from}</span>
                       <svg width="28" height="8" viewBox="0 0 28 8" fill="none">
-                        <path d="M0 4h24m0 0-4-3.5M24 4l-4 3.5" stroke="#21A038" strokeWidth="1.5" />
+                        <path d="M0 4h24m0 0-4-3.5M24 4l-4 3.5" stroke="#3FC8A0" strokeWidth="1.5" />
                       </svg>
                       <span className="text-sm font-medium">{s.to}</span>
                     </div>
@@ -510,10 +516,10 @@ export default function App() {
                       <span
                         className={`text-sm font-semibold ${
                           s.from === ME
-                            ? "text-red-600"
+                            ? "text-[#FF6B6B]"
                             : s.to === ME
-                            ? "text-[#1c8c30]"
-                            : "text-neutral-500"
+                            ? "text-[#3FC8A0]"
+                            : "text-[#8FA79A]"
                         }`}
                       >
                         {money(s.amount)}
@@ -521,14 +527,14 @@ export default function App() {
                       {s.from === ME ? (
                         <button
                           disabled
-                          className="cursor-not-allowed rounded-full bg-[#21A038] px-4 py-1.5 text-xs font-medium text-white opacity-50"
+                          className="cursor-not-allowed rounded-full bg-gradient-to-r from-[#A8CF38] to-[#21A038] px-4 py-1.5 text-xs font-semibold text-[#050D0A] opacity-50"
                         >
                           Перевести по СБП
                         </button>
                       ) : s.to === ME ? (
                         <button
                           disabled
-                          className="cursor-not-allowed rounded-full border border-neutral-200 px-4 py-1.5 text-xs font-medium text-neutral-700 opacity-50"
+                          className="cursor-not-allowed rounded-full border border-[#1C3329] px-4 py-1.5 text-xs font-medium text-[#C4D4CB] opacity-50"
                         >
                           Напомнить
                         </button>
@@ -552,29 +558,29 @@ export default function App() {
                 <AreaChart data={chartWeekly} margin={{ top: 5, right: 5, left: -20, bottom: 0 }}>
                   <defs>
                     <linearGradient id="g" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="#21A038" stopOpacity={0.25} />
-                      <stop offset="100%" stopColor="#21A038" stopOpacity={0} />
+                      <stop offset="0%" stopColor="#A8CF38" stopOpacity={0.45} />
+                      <stop offset="100%" stopColor="#3FC8A0" stopOpacity={0} />
                     </linearGradient>
                   </defs>
                   <XAxis
                     dataKey="week"
                     tickLine={false}
                     axisLine={false}
-                    tick={{ fontSize: 12, fill: "#9ca3af" }}
+                    tick={{ fontSize: 12, fill: "#5C7268" }}
                     tickFormatter={shortDate}
                     interval={xTickInterval(chartWeekly.length)}
                   />
                   <YAxis
                     tickLine={false}
                     axisLine={false}
-                    tick={{ fontSize: 12, fill: "#9ca3af" }}
+                    tick={{ fontSize: 12, fill: "#5C7268" }}
                     tickFormatter={(v) => v / 1000 + "к"}
                   />
                   <Tooltip
                     formatter={(v) => [money(Number(v ?? 0)), "Потрачено"]}
-                    contentStyle={{ borderRadius: 12, border: "none", fontSize: 13 }}
+                    contentStyle={{ background: "#0D1F18", border: "1px solid #1C3329", borderRadius: 12, color: "#F2F5F3", fontSize: 13 }}
                   />
-                  <Area type="monotone" dataKey="sum" stroke="#21A038" strokeWidth={2.5} fill="url(#g)" />
+                  <Area type="monotone" dataKey="sum" stroke="#A8CF38" strokeWidth={2.5} fill="url(#g)" />
                 </AreaChart>
               </ResponsiveContainer>
             </div>
@@ -597,11 +603,11 @@ export default function App() {
                     axisLine={false}
                     width={92}
                     interval={0}
-                    tick={{ fontSize: 12, fill: "#6b7280" }}
+                    tick={{ fontSize: 12, fill: "#8FA79A" }}
                   />
                   <Tooltip
                     formatter={(v) => [money(Number(v ?? 0)), "Сумма"]}
-                    contentStyle={{ borderRadius: 12, border: "none", fontSize: 13 }}
+                    contentStyle={{ background: "#0D1F18", border: "1px solid #1C3329", borderRadius: 12, color: "#F2F5F3", fontSize: 13 }}
                   />
                   <Bar dataKey="sum" radius={[0, 6, 6, 0]} barSize={14}>
                     {chartCategories.map((c, i) => (
@@ -611,10 +617,10 @@ export default function App() {
                 </BarChart>
               </ResponsiveContainer>
             </div>
-            <div className="mt-4 divide-y divide-neutral-100 border-t border-neutral-300">
+            <div className="mt-4 divide-y divide-[#1C3329] border-t border-[#1C3329]">
               {chartCategories.map((c) => (
                 <div key={c.name} className="flex items-center justify-between py-2.5 text-sm">
-                  <span className="text-neutral-600">{c.name}</span>
+                  <span className="text-[#8FA79A]">{c.name}</span>
                   <div className="flex items-center gap-3">
                     <span className="font-medium">{money(c.sum)}</span>
                     <Badge value={c.trend} />
@@ -632,9 +638,9 @@ export default function App() {
             <p className="mt-2 text-3xl font-semibold tracking-tight">{forecastDate}</p>
             <p className="mt-1 text-sm text-white/60">на 9 дней раньше плана</p>
 
-            <div className="mt-5 h-2 w-full overflow-hidden rounded-full bg-white/15">
+            <div className="mt-5 h-2 w-full overflow-hidden rounded-full bg-white/10">
               <div
-                className="h-full rounded-full bg-[#4CAF6D]"
+                className="h-full rounded-full bg-[#3FC8A0]"
                 style={{ width: `${(budgetSpent / budgetTotal) * 100}%` }}
               />
             </div>
@@ -654,23 +660,23 @@ export default function App() {
             <p className="text-sm font-medium">{goal.name}</p>
             <div className="mt-3 flex items-baseline justify-between">
               <p className="text-2xl font-semibold tracking-tight">{money(goal.saved)}</p>
-              <p className="text-2xl font-semibold tracking-tight text-neutral-400">
+              <p className="text-2xl font-semibold tracking-tight text-[#5C7268]">
                 из {money(goal.target)}
               </p>
             </div>
-            <div className="mt-3 h-2 w-full overflow-hidden rounded-full bg-neutral-100">
+            <div className="mt-3 h-2 w-full overflow-hidden rounded-full bg-white/[0.06]">
               <div
-                className="h-full rounded-full bg-[#21A038]"
+                className="h-full rounded-full bg-gradient-to-r from-[#A8CF38] to-[#3FC8A0]"
                 style={{ width: `${(goal.saved / goal.target) * 100}%` }}
               />
             </div>
-            <p className="mt-3 text-sm leading-relaxed text-neutral-500">
+            <p className="mt-3 text-sm leading-relaxed text-[#8FA79A]">
               Осталось {money(goal.target - goal.saved)} — это по{" "}
               {money(Math.round((goal.target - goal.saved) / 4))} с каждого.
             </p>
             <button
               disabled
-              className="mt-4 w-full cursor-not-allowed rounded-full bg-[#21A038] py-2.5 text-sm font-medium text-white opacity-50"
+              className="mt-4 w-full cursor-not-allowed rounded-full bg-gradient-to-r from-[#A8CF38] to-[#21A038] py-2.5 text-sm font-semibold text-[#050D0A] opacity-50"
             >
               Внести взнос
             </button>
@@ -691,7 +697,7 @@ export default function App() {
                     </Pie>
                     <Tooltip
                       formatter={(v) => money(Number(v ?? 0))}
-                      contentStyle={{ borderRadius: 12, border: "none", fontSize: 13 }}
+                      contentStyle={{ background: "#0D1F18", border: "1px solid #1C3329", borderRadius: 12, color: "#F2F5F3", fontSize: 13 }}
                     />
                   </PieChart>
                 </ResponsiveContainer>
@@ -703,13 +709,13 @@ export default function App() {
                       return `${Math.round((recipientSlices[0].sum / total) * 100)}%`;
                     })()}
                   </p>
-                  <p className="text-[10px] text-neutral-400">топ-1 доля</p>
+                  <p className="text-[10px] text-[#5C7268]">топ-1 доля</p>
                 </div>
               </div>
 
               <div className="min-w-0 flex-1 space-y-2">
                 {recipientSlices.length === 0 && (
-                  <p className="text-sm text-neutral-400">Получателей нет</p>
+                  <p className="text-sm text-[#5C7268]">Получателей нет</p>
                 )}
                 {recipientSlices.map((m) => {
                   const total = recipientSlices.reduce((s, x) => s + x.sum, 0);
@@ -718,11 +724,11 @@ export default function App() {
                     <div key={m.name} className="flex items-center justify-between gap-2 text-sm">
                       <div className="flex min-w-0 items-center gap-2">
                         <span className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ background: m.color }} />
-                        <span className="truncate text-neutral-600">{m.name}</span>
+                        <span className="truncate text-[#8FA79A]">{m.name}</span>
                       </div>
                       <div className="flex shrink-0 items-center gap-2">
                         <span className="text-xs font-medium">{money(m.sum)}</span>
-                        <span className="w-8 text-right text-xs text-neutral-400">{pct}%</span>
+                        <span className="w-8 text-right text-xs text-[#5C7268]">{pct}%</span>
                       </div>
                     </div>
                   );
@@ -734,32 +740,32 @@ export default function App() {
           <Card title="Что заметил ассистент">
   <div className="space-y-3">
     {!aiLoaded || aiLoading ? (
-      <p className="py-2 text-center text-sm text-neutral-400">
+      <p className="py-2 text-center text-sm text-[#5C7268]">
         {aiLoading ? "Анализируем ваши финансы…" : "Загрузка…"}
       </p>
     ) : observations.length === 0 ? (
       <div>
         {aiInsights.length === 0 && !aiRan ? (
           <>
-            <p className="mb-3 text-sm leading-relaxed text-neutral-500">
+            <p className="mb-3 text-sm leading-relaxed text-[#8FA79A]">
               Анализ для этой выписки ещё не проводился.
             </p>
             <button
               onClick={runAnalysis}
               disabled={currentId == null}
-              className="w-full rounded-full bg-[#21A038] py-2.5 text-sm font-medium text-white transition hover:bg-[#1c8c30] disabled:cursor-not-allowed disabled:opacity-50"
+              className="w-full rounded-full bg-gradient-to-r from-[#A8CF38] to-[#21A038] py-2.5 text-sm font-semibold text-[#050D0A] shadow-[0_0_28px_-6px_#21A038] transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-50"
             >
               Провести финансовый анализ
             </button>
           </>
         ) : (
           <>
-            <p className="mb-3 text-sm leading-relaxed text-neutral-500">
+            <p className="mb-3 text-sm leading-relaxed text-[#8FA79A]">
               Наблюдений по этой выписке нет.
             </p>
             <button
               onClick={runAnalysis}
-              className="w-full rounded-full border border-neutral-200 py-2 text-xs font-medium text-neutral-500 transition hover:bg-neutral-50"
+              className="w-full rounded-full border border-[#1C3329] py-2 text-xs font-medium text-[#8FA79A] transition hover:bg-white/[0.03]"
             >
               Обновить анализ
             </button>
@@ -770,22 +776,22 @@ export default function App() {
       <>
         {observations.map((o) => {
           const accent = INSIGHT_ACCENT[o.type] ?? {
-            dot: "bg-neutral-400",
-            text: "text-neutral-600",
+            dot: "bg-[#5C7268]",
+            text: "text-[#8FA79A]",
           };
           return (
-            <div key={o.id} className="rounded-2xl bg-neutral-50 p-4">
+            <div key={o.id} className="rounded-2xl border border-white/[0.06] bg-white/[0.04] p-4">
               <div className="mb-1 flex items-center gap-2">
                 <span className={`h-2 w-2 shrink-0 rounded-full ${accent.dot}`} />
                 <p className={`text-sm font-semibold ${accent.text}`}>{o.title}</p>
               </div>
-              <p className="text-sm leading-relaxed text-neutral-700">{o.description}</p>
+              <p className="text-sm leading-relaxed text-[#C4D4CB]">{o.description}</p>
             </div>
           );
         })}
         <button
           onClick={runAnalysis}
-          className="w-full rounded-full border border-neutral-200 py-2 text-xs font-medium text-neutral-500 transition hover:bg-neutral-50"
+          className="w-full rounded-full border border-[#1C3329] py-2 text-xs font-medium text-[#8FA79A] transition hover:bg-white/[0.03]"
         >
           Обновить анализ
         </button>
@@ -802,28 +808,28 @@ export default function App() {
 >
   <div className="space-y-3">
     {!aiLoaded || aiLoading ? (
-      <p className="py-2 text-center text-sm text-neutral-400">
+      <p className="py-2 text-center text-sm text-[#5C7268]">
         {aiLoading ? "Анализируем ваши финансы…" : "Загрузка…"}
       </p>
     ) : recommendations.length === 0 ? (
-      <p className="py-2 text-sm leading-relaxed text-neutral-500">
+      <p className="py-2 text-sm leading-relaxed text-[#8FA79A]">
         Рекомендаций пока нет
       </p>
     ) : (
       recommendations.map((r) => {
         const style = PRIORITY_STYLE[r.data.priority] ?? PRIORITY_STYLE.low;
         return (
-          <div key={r.id} className="rounded-2xl bg-[#F1F8F3] p-4">
+          <div key={r.id} className="rounded-2xl bg-[#3FC8A0]/[0.07] p-4">
             <div className="mb-1 flex items-center justify-between gap-2">
-              <p className="text-sm font-semibold text-neutral-900">{r.title}</p>
+              <p className="text-sm font-semibold text-[#F2F5F3]">{r.title}</p>
               <span
                 className={`shrink-0 rounded-full px-2 py-0.5 text-xs font-medium ${style.badge}`}
               >
                 {r.data.priority}
               </span>
             </div>
-            <p className="text-sm leading-relaxed text-neutral-600">{r.description}</p>
-            <p className="mt-1 text-sm leading-relaxed text-neutral-700">
+            <p className="text-sm leading-relaxed text-[#8FA79A]">{r.description}</p>
+            <p className="mt-1 text-sm leading-relaxed text-[#C4D4CB]">
               {r.data.recommendation}
             </p>
             <p className={`mt-1.5 text-sm font-semibold ${style.amount}`}>
@@ -837,6 +843,7 @@ export default function App() {
 </Card>
           <SavingsPlanner statementId={currentId} />
         </div>
+      </div>
       </div>
     </div>
   );
