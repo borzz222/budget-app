@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import {
   AreaChart,
   Area,
@@ -12,8 +12,37 @@ import {
   ResponsiveContainer,
   Cell,
 } from "recharts";
+import {
+  listStatements,
+  getAnalytics,
+  getErrorMessage,
+  analyzeStatement,
+  getAiInsights,
+  isRecommendation,
+  type Statement,
+  type AnalyticsResponse,
+  type AiInsight,
+} from "./services/api";
+import {
+  mapCategories,
+  mapRecipients,
+  mapTimeline,
+  mapTotals,
+} from "./services/mappers";
+import UploadForm from "./components/UploadForm";
+import StatementSelector from "./components/StatementSelector";
+import TransactionsTable from "./components/TransactionsTable";
+import SavingsPlanner from "./components/SavingsPlanner";
+import ReceiptUploader from "./components/ReceiptUploader";
+import ManualTransactionForm from "./components/ManualTransactionForm";
+import FinancialChatWidget from "./components/FinancialChatWidget";
+import { Toaster, toast } from "./components/Toast";
 
 /* ---------------- МОК-ДАННЫЕ ---------------- */
+
+// Мастер-флаг legacy-виджетов исходного шаблона (split-бюджет соседей).
+// false — блоки не рендерятся вообще, но код остаётся для отката.
+const SHOW_LEGACY_WIDGETS = false;
 
 const ME = "Ты";
 
@@ -32,48 +61,6 @@ const settlements = [
 
 const myBalance = -540;
 
-const weekly = [
-  { week: "7 июл", sum: 11200 },
-  { week: "14 июл", sum: 9800 },
-  { week: "21 июл", sum: 13400 },
-  { week: "28 июл", sum: 10100 },
-  { week: "4 авг", sum: 12600 },
-  { week: "11 авг", sum: 11900 },
-  { week: "18 авг", sum: 16800 },
-  { week: "25 авг", sum: 19400 },
-];
-
-const categories = [
-  { name: "Аренда", sum: 32000, trend: 0, color: "#0F3D2E" },
-  { name: "Продукты", sum: 18400, trend: 4, color: "#12603F" },
-  { name: "Доставка", sum: 6800, trend: 180, color: "#21A038" },
-  { name: "Развлечения", sum: 5600, trend: -12, color: "#4CAF6D" },
-  { name: "Коммуналка", sum: 4200, trend: 6, color: "#7BC894" },
-  { name: "Другое", sum: 2400, trend: 8, color: "#E3F1E7" },
-];
-
-const byMember = [
-  { name: "Аня", sum: 38200, color: "#0F5132" },
-  { name: "Ты", sum: 17898, color: "#21A038" },
-  { name: "Дима", sum: 9600, color: "#4CAF6D" },
-  { name: "Соня", sum: 5892, color: "#A3D9B1" },
-];
-
-const spentByMember = [
-  { name: "Аня", sum: 19420, color: "#A8CF38" },
-  { name: "Ты", sum: 17898, color: "#3FC8A0" },
-  { name: "Дима", sum: 18630, color: "#B54FB5" },
-  { name: "Соня", sum: 15642, color: "#9BA3AE" },
-];
-
-const transactions = [
-  { who: "Аня", what: "Продукты, Пятёрочка", amount: 4230, when: "Сегодня, 14:12", split: 4 },
-  { who: "Ты", what: "Интернет за сентябрь", amount: 900, when: "Сегодня, 11:40", split: 4 },
-  { who: "Дима", what: "Доставка, вечер", amount: 1870, when: "Вчера, 22:05", split: 2 },
-  { who: "Соня", what: "Бытовая химия", amount: 1120, when: "Вчера, 19:31", split: 4 },
-  { who: "Аня", what: "Аренда, сентябрь", amount: 32000, when: "1 сентября", split: 4 },
-];
-
 const budgetTotal = 78000;
 const budgetSpent = 71590;
 
@@ -86,6 +73,35 @@ const goal = {
 /* ---------------- МЕЛКИЕ КОМПОНЕНТЫ ---------------- */
 
 const money = (n: number) => n.toLocaleString("ru-RU") + " ₽";
+
+// Короткая подпись даты для оси X ("1 сен" вместо "2026-09-01").
+// Не-ISO значения (на всякий случай) отдаём как есть.
+const shortDate = (value: string | number) => {
+  if (typeof value !== "string") return String(value);
+  const dt = new Date(`${value}T00:00:00`);
+  if (Number.isNaN(dt.getTime())) return value;
+  return new Intl.DateTimeFormat("ru", { day: "numeric", month: "short" }).format(dt);
+};
+
+// Шаг подписей оси X: не больше ~7 подписей при любом количестве точек
+// (при 5-7 точках — все подряд, при 30+ — каждая 5-я).
+const xTickInterval = (length: number) =>
+  length <= 7 ? 0 : Math.ceil(length / 7) - 1;
+
+/* Цветовые акценты типов инсайтов и приоритетов рекомендаций. */
+const INSIGHT_ACCENT: Record<string, { dot: string; text: string }> = {
+  аномалия: { dot: "bg-orange-500", text: "text-orange-700" },
+  подписка: { dot: "bg-sky-500", text: "text-sky-700" },
+  рост_расходов: { dot: "bg-red-500", text: "text-red-600" },
+  главная_категория: { dot: "bg-[#21A038]", text: "text-[#1c8c30]" },
+  временной_паттерн: { dot: "bg-violet-500", text: "text-violet-700" },
+};
+
+const PRIORITY_STYLE: Record<string, { badge: string; amount: string }> = {
+  high: { badge: "bg-red-50 text-red-600", amount: "text-red-600" },
+  medium: { badge: "bg-amber-50 text-amber-700", amount: "text-neutral-900" },
+  low: { badge: "bg-neutral-100 text-neutral-500", amount: "text-neutral-500" },
+};
 /* ---------------- ЛОГОТИПЫ ---------------- */
 
 // Вариант 1: круг, поделённый на доли
@@ -96,39 +112,6 @@ function MarkPie() {
       <path d="M12 12h9.5A9.5 9.5 0 0 1 12 21.5z" fill="white" opacity="0.75" />
       <path d="M12 12v9.5A9.5 9.5 0 0 1 2.5 12z" fill="white" opacity="0.5" />
       <path d="M12 12H2.5A9.5 9.5 0 0 1 12 2.5z" fill="white" opacity="0.3" />
-    </svg>
-  );
-}
-
-// Вариант 2: две встречные стрелки
-function MarkArrows() {
-  return (
-    <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none">
-      <path
-        d="M3 8.5h13m0 0-3.5-3.5M16 8.5 12.5 12"
-        stroke="white"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <path
-        d="M21 15.5H8m0 0 3.5-3.5M8 15.5l3.5 3.5"
-        stroke="white"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        opacity="0.7"
-      />
-    </svg>
-  );
-}
-
-// Вариант 3: знак равенства
-function MarkEqual() {
-  return (
-    <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none">
-      <rect x="4" y="8" width="16" height="3" rx="1.5" fill="white" />
-      <rect x="4" y="14" width="16" height="3" rx="1.5" fill="white" />
     </svg>
   );
 }
@@ -227,6 +210,7 @@ function Card({
 export default function App() {
     const [avatars, setAvatars] = useState<Record<string, string>>({});
   const [card, setCard] = useState<{ name: string; balance: number } | null>(null);
+  const [editing, setEditing] = useState<string | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
 
   function pickAvatar(id: string) {
@@ -242,11 +226,135 @@ export default function App() {
     reader.readAsDataURL(file);
     e.target.value = "";
   }
+
+  /* ---- Данные backend FinBalance ---- */
+  const [statements, setStatements] = useState<Statement[]>([]);
+  const [currentId, setCurrentId] = useState<number | null>(null);
+  const [analytics, setAnalytics] = useState<AnalyticsResponse | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [apiError, setApiError] = useState<string | null>(null);
+  const [aiInsights, setAiInsights] = useState<AiInsight[]>([]);
+  const [aiLoaded, setAiLoaded] = useState(false);
+  const [aiLoading, setAiLoading] = useState(false);
+  // Анализ реально запускался (сохранённые данные могли прийти пустыми
+  // или без наблюдений — это НЕ то же самое, что "не проводился").
+  const [aiRan, setAiRan] = useState(false);
+  // Счётчик инвалидации после confirm чека: аналитика и таблица
+  // перезапрашиваются, т.к. состав транзакций выписки изменился.
+  const [refreshKey, setRefreshKey] = useState(0);
+
+  useEffect(() => {
+    let cancelled = false;
+    listStatements()
+      .then((res) => {
+        if (cancelled) return;
+        setStatements(res.data);
+        setCurrentId(res.data.length > 0 ? res.data[0].id : null);
+      })
+      .catch((e: unknown) => {
+        if (!cancelled) {
+          const text = getErrorMessage(e, "Не удалось загрузить выписки");
+          setApiError(text);
+          toast.error(text);
+          setLoading(false);
+        }
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  useEffect(() => {
+    if (currentId == null) return;
+    let cancelled = false;
+    setLoading(true);
+    getAnalytics(currentId)
+      .then((res) => {
+        if (!cancelled) setAnalytics(res);
+      })
+      .catch((e: unknown) => {
+        if (!cancelled) {
+          const text = getErrorMessage(e, "Не удалось загрузить аналитику");
+          setApiError(text);
+          toast.error(text);
+        }
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [currentId, refreshKey]);
+
+  // Сохранённый AI-анализ подгружаем тихо, без force=true:
+  // платный вызов к GigaChat — только по явному клику пользователя.
+  useEffect(() => {
+    if (currentId == null) return;
+    let cancelled = false;
+    setAiLoaded(false);
+    setAiInsights([]);
+    setAiRan(false);
+    getAiInsights(currentId)
+      .then((res) => {
+        if (!cancelled) {
+          setAiInsights(res.data);
+          setAiLoaded(true);
+        }
+      })
+      .catch((e: unknown) => {
+        if (!cancelled) {
+          toast.error(getErrorMessage(e, "Не удалось загрузить AI-анализ"));
+          setAiLoaded(true);
+        }
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [currentId]);
+
+  async function runAnalysis() {
+    if (currentId == null || aiLoading) return;
+    setAiLoading(true);
+    try {
+      const res = await analyzeStatement(currentId, true);
+      setAiInsights(res.data);
+      setAiRan(true);
+      toast.success("Финансовый анализ готов");
+    } catch (e: unknown) {
+      toast.error(getErrorMessage(e, "Не удалось выполнить анализ"));
+    } finally {
+      setAiLoading(false);
+    }
+  }
+
+  function handleUploaded(statement: Statement) {
+    setStatements((prev) =>
+      prev.some((s) => s.id === statement.id) ? prev : [statement, ...prev],
+    );
+    setCurrentId(statement.id);
+  }
+
+  function handleConfirmed() {
+    setRefreshKey((k) => k + 1);
+  }
+
+  const stats = analytics ? mapTotals(analytics.totals) : null;
+  const chartCategories = analytics ? mapCategories(analytics.by_category) : [];
+  const chartWeekly = analytics ? mapTimeline(analytics.timeline) : [];
+  const recipientSlices = analytics ? mapRecipients(analytics.top_recipients) : [];
+  const currentStatement = statements.find((s) => s.id === currentId) ?? null;
+  const observations = aiInsights.filter((x) => !isRecommendation(x));
+  const recommendations = aiInsights.filter(isRecommendation);
+  const totalMonthlySaving = recommendations.reduce((s, r) => s + r.data.monthly_saving, 0);
+
   const daysLeft = 17;
   const forecastDate = "21 сентября";
 
   return (
     <div className="min-h-screen bg-[#EFEEEA] px-4 py-5 font-sans text-neutral-900 md:px-8 md:py-7">
+      <Toaster />
+      <FinancialChatWidget />
             <input
         ref={fileRef}
         type="file"
@@ -280,69 +388,107 @@ export default function App() {
                 {money(Math.abs(myBalance))}
               </p>
             </div>
-            <div className="flex -space-x-2">
-              {members.map((m) => (
-                <button
-                  key={m.id}
-                  title={`${m.name} — сменить аватар`}
-                  onClick={() => pickAvatar(m.id)}
-                  className="flex h-9 w-9 items-center justify-center overflow-hidden rounded-full border-2 border-[#EFEEEA] bg-cover bg-center text-xs font-semibold text-white transition hover:scale-110"
-                  style={
-                    avatars[m.id]
-                      ? { backgroundImage: `url(${avatars[m.id]})` }
-                      : { background: m.color }
-                  }
-                >
-                  {!avatars[m.id] && m.name[0]}
-                </button>
-              ))}
-            </div>
+            {SHOW_LEGACY_WIDGETS && (
+              <div className="flex -space-x-2">
+                {members.map((m) => (
+                  <button
+                    key={m.id}
+                    title={`${m.name} — сменить аватар`}
+                    onClick={() => pickAvatar(m.id)}
+                    className="flex h-9 w-9 items-center justify-center overflow-hidden rounded-full border-2 border-[#EFEEEA] bg-cover bg-center text-xs font-semibold text-white transition hover:scale-110"
+                    style={
+                      avatars[m.id]
+                        ? { backgroundImage: `url(${avatars[m.id]})` }
+                        : { background: m.color }
+                    }
+                  >
+                    {!avatars[m.id] && m.name[0]}
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
 
           <div className="flex items-center gap-2">
-            {card ? (
-              <div className="flex items-center gap-3 rounded-full bg-white px-4 py-2">
-                <span className="h-2 w-2 rounded-full bg-[#21A038]" />
-                <div className="text-left">
-                  <p className="text-xs leading-tight text-neutral-400">{card.name}</p>
-                  <p className="text-sm font-semibold leading-tight">{money(card.balance)}</p>
+            {SHOW_LEGACY_WIDGETS &&
+              (card ? (
+                <div className="flex items-center gap-3 rounded-full bg-white px-4 py-2">
+                  <span className="h-2 w-2 rounded-full bg-[#21A038]" />
+                  <div className="text-left">
+                    <p className="text-xs leading-tight text-neutral-400">{card.name}</p>
+                    <p className="text-sm font-semibold leading-tight">{money(card.balance)}</p>
+                  </div>
+                  <button
+                    onClick={() => setCard(null)}
+                    className="ml-1 text-xs text-neutral-400 hover:text-neutral-600"
+                  >
+                    отвязать
+                  </button>
                 </div>
+              ) : (
                 <button
-                  onClick={() => setCard(null)}
-                  className="ml-1 text-xs text-neutral-400 hover:text-neutral-600"
+                  onClick={() => setCard({ name: "СберКарта •••• 4417", balance: 42300 })}
+                  className="rounded-full border border-neutral-300 px-4 py-2 text-sm font-medium text-neutral-700 transition hover:bg-white"
                 >
-                  отвязать
+                  Привязать карту
                 </button>
-              </div>
-            ) : (
-              <button
-                onClick={() => setCard({ name: "СберКарта •••• 4417", balance: 42300 })}
-                className="rounded-full border border-neutral-300 px-4 py-2 text-sm font-medium text-neutral-700 transition hover:bg-white"
-              >
-                Привязать карту
-              </button>
-            )}
-            <button className="rounded-full bg-[#21A038] px-5 py-2.5 text-sm font-medium text-white transition hover:bg-[#1c8c30]">
+              ))}
+            <button
+              disabled
+              className="cursor-not-allowed rounded-full bg-[#21A038] px-5 py-2.5 text-sm font-medium text-white opacity-50"
+            >
               Добавить трату
             </button>
           </div>
         </div>
       </header>
 
+      <div className="mb-4 grid grid-cols-1 gap-4 md:gap-5 lg:mb-5 lg:grid-cols-2">
+        <div className="rounded-3xl bg-white p-6">
+          <UploadForm onUploaded={handleUploaded} />
+          <ReceiptUploader statementId={currentId} onConfirmed={handleConfirmed} />
+          <div className="mt-4 border-t border-neutral-100 pt-4">
+            <ManualTransactionForm statementId={currentId} onSaved={handleConfirmed} />
+          </div>
+        </div>
+        <div className="rounded-3xl bg-white p-6">
+          <StatementSelector
+            statements={statements}
+            currentId={currentId}
+            onSelect={setCurrentId}
+          />
+          {loading && <p className="mt-3 text-sm text-neutral-400">Загрузка данных…</p>}
+          {apiError && <p className="mt-3 text-sm text-red-600">{apiError}</p>}
+          {currentStatement && (
+            <p className="mt-3 text-xs text-neutral-400">
+              {currentStatement.transactions_count} операций
+              {currentStatement.period_from && currentStatement.period_to
+                ? ` · ${currentStatement.period_from} — ${currentStatement.period_to}`
+                : ""}
+            </p>
+          )}
+        </div>
+      </div>
+
       <div className="mb-4 grid grid-cols-1 gap-4 md:gap-5 lg:mb-5 lg:grid-cols-3">
-        <Stat label="Общие траты в сентябре" value={money(71590)} hint="за 4 дня" />
-        <Stat label="Незакрытых долгов" value="3" hint="на сумму 2 590 ₽" />
         <Stat
-          label="Бюджет на сентябрь"
-          value={money(budgetTotal)}
-          hint={`потрачено ${Math.round((budgetSpent / budgetTotal) * 100)}%`}
+          label="Баланс выписки"
+          value={stats ? money(stats.balance) : "—"}
+          hint={currentStatement ? currentStatement.file_name : "нет данных"}
+        />
+        <Stat label="Доходы" value={stats ? money(stats.income) : "—"} hint="за период" />
+        <Stat
+          label="Расходы"
+          value={stats ? money(stats.expenses) : "—"}
+          hint={stats ? `${stats.transactionsCount} операций` : "нет данных"}
           dark
         />
       </div>
 
       <div className="grid grid-cols-1 gap-4 md:gap-5 lg:grid-cols-3">
         <div className="space-y-4 md:space-y-5 lg:col-span-2">
-          <Card title="Кто кому должен" action="минимум переводов">
+          {SHOW_LEGACY_WIDGETS && (
+            <Card title="Кто кому должен" action="минимум переводов">
             <div className="space-y-3">
               {settlements.map((s, i) => {
                 const mine = s.from === ME || s.to === ME;
@@ -373,11 +519,17 @@ export default function App() {
                         {money(s.amount)}
                       </span>
                       {s.from === ME ? (
-                        <button className="rounded-full bg-[#21A038] px-4 py-1.5 text-xs font-medium text-white">
+                        <button
+                          disabled
+                          className="cursor-not-allowed rounded-full bg-[#21A038] px-4 py-1.5 text-xs font-medium text-white opacity-50"
+                        >
                           Перевести по СБП
                         </button>
                       ) : s.to === ME ? (
-                        <button className="rounded-full border border-neutral-200 px-4 py-1.5 text-xs font-medium text-neutral-700">
+                        <button
+                          disabled
+                          className="cursor-not-allowed rounded-full border border-neutral-200 px-4 py-1.5 text-xs font-medium text-neutral-700 opacity-50"
+                        >
                           Напомнить
                         </button>
                       ) : (
@@ -388,12 +540,16 @@ export default function App() {
                 );
               })}
             </div>
-          </Card>
+            </Card>
+          )}
 
-          <Card title="Общие траты по неделям" action="последние 8 недель">
+          <Card
+            title="Траты по дням"
+            action={currentStatement ? currentStatement.file_name : "нет данных"}
+          >
             <div className="h-40">
               <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={weekly} margin={{ top: 5, right: 5, left: -20, bottom: 0 }}>
+                <AreaChart data={chartWeekly} margin={{ top: 5, right: 5, left: -20, bottom: 0 }}>
                   <defs>
                     <linearGradient id="g" x1="0" y1="0" x2="0" y2="1">
                       <stop offset="0%" stopColor="#21A038" stopOpacity={0.25} />
@@ -405,6 +561,8 @@ export default function App() {
                     tickLine={false}
                     axisLine={false}
                     tick={{ fontSize: 12, fill: "#9ca3af" }}
+                    tickFormatter={shortDate}
+                    interval={xTickInterval(chartWeekly.length)}
                   />
                   <YAxis
                     tickLine={false}
@@ -413,7 +571,7 @@ export default function App() {
                     tickFormatter={(v) => v / 1000 + "к"}
                   />
                   <Tooltip
-                    formatter={(v: number) => [money(v), "Потрачено"]}
+                    formatter={(v) => [money(Number(v ?? 0)), "Потрачено"]}
                     contentStyle={{ borderRadius: 12, border: "none", fontSize: 13 }}
                   />
                   <Area type="monotone" dataKey="sum" stroke="#21A038" strokeWidth={2.5} fill="url(#g)" />
@@ -422,34 +580,15 @@ export default function App() {
             </div>
           </Card>
 
-          <Card title="Последние траты" action="показать все">
-            <div className="divide-y divide-neutral-100">
-              {transactions.map((t, i) => (
-                <div key={i} className="flex items-center justify-between py-3">
-                  <div className="flex items-center gap-3">
-                    <div
-                      className="flex h-9 w-9 items-center justify-center rounded-full text-xs font-semibold text-white"
-                      style={{ background: members.find((m) => m.name === t.who)?.color ?? "#999" }}
-                    >
-                      {t.who[0]}
-                    </div>
-                    <div>
-                      <p className="text-sm font-medium">{t.what}</p>
-                      <p className="text-xs text-neutral-400">
-                        {t.who} · {t.when} · на {t.split} чел.
-                      </p>
-                    </div>
-                  </div>
-                  <span className="text-sm font-semibold">{money(t.amount)}</span>
-                </div>
-              ))}
-            </div>
-          </Card>
+          <TransactionsTable statementId={currentId} refreshKey={refreshKey} />
 
-<Card title="Расходы по категориям" action="сентябрь">
+<Card
+            title="Расходы по категориям"
+            action={currentStatement ? currentStatement.file_name : "нет данных"}
+          >
             <div className="h-52">
               <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={categories} layout="vertical" margin={{ top: 0, right: 0, left: 0, bottom: 0 }}>
+                <BarChart data={chartCategories} layout="vertical" margin={{ top: 0, right: 0, left: 0, bottom: 0 }}>
                   <XAxis type="number" hide />
                   <YAxis
                     type="category"
@@ -461,11 +600,11 @@ export default function App() {
                     tick={{ fontSize: 12, fill: "#6b7280" }}
                   />
                   <Tooltip
-                    formatter={(v: number) => [money(v), "Сумма"]}
+                    formatter={(v) => [money(Number(v ?? 0)), "Сумма"]}
                     contentStyle={{ borderRadius: 12, border: "none", fontSize: 13 }}
                   />
                   <Bar dataKey="sum" radius={[0, 6, 6, 0]} barSize={14}>
-                    {categories.map((c, i) => (
+                    {chartCategories.map((c, i) => (
                       <Cell key={i} fill={c.trend > 50 ? "#21A038" : "#CBE7D3"} />
                     ))}
                   </Bar>
@@ -473,7 +612,7 @@ export default function App() {
               </ResponsiveContainer>
             </div>
             <div className="mt-4 divide-y divide-neutral-100 border-t border-neutral-300">
-              {categories.map((c) => (
+              {chartCategories.map((c) => (
                 <div key={c.name} className="flex items-center justify-between py-2.5 text-sm">
                   <span className="text-neutral-600">{c.name}</span>
                   <div className="flex items-center gap-3">
@@ -487,7 +626,8 @@ export default function App() {
         </div>
 
         <div className="space-y-5">
-          <div className="rounded-3xl bg-[#0F3D2E] p-6 text-white">
+          {SHOW_LEGACY_WIDGETS && (
+            <div className="rounded-3xl bg-[#0F3D2E] p-6 text-white">
             <p className="text-sm text-white/70">Бюджет закончится</p>
             <p className="mt-2 text-3xl font-semibold tracking-tight">{forecastDate}</p>
             <p className="mt-1 text-sm text-white/60">на 9 дней раньше плана</p>
@@ -507,7 +647,9 @@ export default function App() {
               Средний расход за последние 14 дней — 2 480 ₽ в день. При таком темпе остатка хватит
               на {daysLeft} дней, с учётом подписок 15-го числа.
             </p>
-          </div>
+            </div>
+          )}
+          {SHOW_LEGACY_WIDGETS && (
           <Card title="Общая цель" action={goal.deadline}>
             <p className="text-sm font-medium">{goal.name}</p>
             <div className="mt-3 flex items-baseline justify-between">
@@ -526,42 +668,52 @@ export default function App() {
               Осталось {money(goal.target - goal.saved)} — это по{" "}
               {money(Math.round((goal.target - goal.saved) / 4))} с каждого.
             </p>
-            <button className="mt-4 w-full rounded-full bg-[#21A038] py-2.5 text-sm font-medium text-white transition hover:bg-[#1c8c30]">
+            <button
+              disabled
+              className="mt-4 w-full cursor-not-allowed rounded-full bg-[#21A038] py-2.5 text-sm font-medium text-white opacity-50"
+            >
               Внести взнос
             </button>
           </Card>
-          <Card title="Кто сколько потратил" action="сентябрь">
+          )}
+          <Card
+            title="Топ получателей"
+            action={currentStatement ? currentStatement.file_name : "нет данных"}
+          >
             <div className="flex items-center gap-4">
               <div className="relative h-32 w-32 shrink-0">
                 <ResponsiveContainer width="100%" height="100%">
                   <PieChart>
-                    <Pie data={spentByMember} dataKey="sum" nameKey="name" innerRadius={40} outerRadius={62} paddingAngle={2}>
-                      {spentByMember.map((m, i) => (
+                    <Pie data={recipientSlices} dataKey="sum" nameKey="name" innerRadius={40} outerRadius={62} paddingAngle={2}>
+                      {recipientSlices.map((m, i) => (
                         <Cell key={i} fill={m.color} />
                       ))}
                     </Pie>
                     <Tooltip
-                      formatter={(v: number) => money(v)}
+                      formatter={(v) => money(Number(v ?? 0))}
                       contentStyle={{ borderRadius: 12, border: "none", fontSize: 13 }}
                     />
                   </PieChart>
                 </ResponsiveContainer>
                 <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center">
                   <p className="text-xl font-semibold tracking-tight">
-                    {Math.round(
-                      (spentByMember.find((m) => m.name === ME)!.sum /
-                        spentByMember.reduce((s, m) => s + m.sum, 0)) * 100
-                    )}
-                    %
+                    {(() => {
+                      const total = recipientSlices.reduce((s, m) => s + m.sum, 0);
+                      if (total <= 0 || recipientSlices.length === 0) return "—";
+                      return `${Math.round((recipientSlices[0].sum / total) * 100)}%`;
+                    })()}
                   </p>
-                  <p className="text-[10px] text-neutral-400">твоя доля</p>
+                  <p className="text-[10px] text-neutral-400">топ-1 доля</p>
                 </div>
               </div>
 
               <div className="min-w-0 flex-1 space-y-2">
-                {spentByMember.map((m) => {
-                  const total = spentByMember.reduce((s, x) => s + x.sum, 0);
-                  const pct = Math.round((m.sum / total) * 100);
+                {recipientSlices.length === 0 && (
+                  <p className="text-sm text-neutral-400">Получателей нет</p>
+                )}
+                {recipientSlices.map((m) => {
+                  const total = recipientSlices.reduce((s, x) => s + x.sum, 0);
+                  const pct = total > 0 ? Math.round((m.sum / total) * 100) : 0;
                   return (
                     <div key={m.name} className="flex items-center justify-between gap-2 text-sm">
                       <div className="flex min-w-0 items-center gap-2">
@@ -581,51 +733,109 @@ export default function App() {
 
           <Card title="Что заметил ассистент">
   <div className="space-y-3">
-    <div className="rounded-2xl bg-neutral-50 p-4">
-      <p className="text-sm leading-relaxed">
-                Доставка выросла в 2,8 раза за две недели —
-                6&nbsp;800&nbsp;₽ против средних 2&nbsp;400&nbsp;₽.
-        Почти всё по будням после 21:00.
+    {!aiLoaded || aiLoading ? (
+      <p className="py-2 text-center text-sm text-neutral-400">
+        {aiLoading ? "Анализируем ваши финансы…" : "Загрузка…"}
       </p>
-    </div>
-    <div className="rounded-2xl bg-neutral-50 p-4">
-      <p className="text-sm leading-relaxed">
-                Продукты покупают мелкими партиями 4–6 раз в неделю, средний
-                чек&nbsp;1&nbsp;100&nbsp;₽.
-      </p>
-    </div>
-    <div className="rounded-2xl bg-neutral-50 p-4">
-      <p className="text-sm leading-relaxed">
-        Аня платит за аренду четвёртый месяц подряд и ждёт возврата дольше остальных.
-      </p>
-    </div>
+    ) : observations.length === 0 ? (
+      <div>
+        {aiInsights.length === 0 && !aiRan ? (
+          <>
+            <p className="mb-3 text-sm leading-relaxed text-neutral-500">
+              Анализ для этой выписки ещё не проводился.
+            </p>
+            <button
+              onClick={runAnalysis}
+              disabled={currentId == null}
+              className="w-full rounded-full bg-[#21A038] py-2.5 text-sm font-medium text-white transition hover:bg-[#1c8c30] disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              Провести финансовый анализ
+            </button>
+          </>
+        ) : (
+          <>
+            <p className="mb-3 text-sm leading-relaxed text-neutral-500">
+              Наблюдений по этой выписке нет.
+            </p>
+            <button
+              onClick={runAnalysis}
+              className="w-full rounded-full border border-neutral-200 py-2 text-xs font-medium text-neutral-500 transition hover:bg-neutral-50"
+            >
+              Обновить анализ
+            </button>
+          </>
+        )}
+      </div>
+    ) : (
+      <>
+        {observations.map((o) => {
+          const accent = INSIGHT_ACCENT[o.type] ?? {
+            dot: "bg-neutral-400",
+            text: "text-neutral-600",
+          };
+          return (
+            <div key={o.id} className="rounded-2xl bg-neutral-50 p-4">
+              <div className="mb-1 flex items-center gap-2">
+                <span className={`h-2 w-2 shrink-0 rounded-full ${accent.dot}`} />
+                <p className={`text-sm font-semibold ${accent.text}`}>{o.title}</p>
+              </div>
+              <p className="text-sm leading-relaxed text-neutral-700">{o.description}</p>
+            </div>
+          );
+        })}
+        <button
+          onClick={runAnalysis}
+          className="w-full rounded-full border border-neutral-200 py-2 text-xs font-medium text-neutral-500 transition hover:bg-neutral-50"
+        >
+          Обновить анализ
+        </button>
+      </>
+    )}
   </div>
 </Card>
 
-<Card title="Как сэкономить" action="до 5 700 ₽ в месяц">
+<Card
+  title="Как сэкономить"
+  action={
+    recommendations.length > 0 ? `≈ ${money(totalMonthlySaving)} / мес` : undefined
+  }
+>
   <div className="space-y-3">
-    <div className="rounded-2xl bg-[#F1F8F3] p-4">
-      <p className="text-sm leading-relaxed">
-        Два домашних ужина в неделю вместо доставки.
+    {!aiLoaded || aiLoading ? (
+      <p className="py-2 text-center text-sm text-neutral-400">
+        {aiLoading ? "Анализируем ваши финансы…" : "Загрузка…"}
       </p>
-      <p className="mt-1.5 text-sm font-semibold text-[#1c8c30]">около 3 000 ₽ в месяц</p>
-    </div>
-    <div className="rounded-2xl bg-[#F1F8F3] p-4">
-      <p className="text-sm leading-relaxed">
-        Одна общая закупка продуктов в неделю вместо мелких походов.
+    ) : recommendations.length === 0 ? (
+      <p className="py-2 text-sm leading-relaxed text-neutral-500">
+        Рекомендаций пока нет
       </p>
-      <p className="mt-1.5 text-sm font-semibold text-[#1c8c30]">
-        около 2 700 ₽ в месяц, это 15%
-      </p>
-    </div>
-    <div className="rounded-2xl bg-[#F1F8F3] p-4">
-      <p className="text-sm leading-relaxed">
-        Перевести Ане 1 340 ₽ до выходных, чтобы закрыть долг за аренду.
-      </p>
-      <p className="mt-1.5 text-sm font-semibold text-[#1c8c30]">снимет напряжение</p>
-    </div>
+    ) : (
+      recommendations.map((r) => {
+        const style = PRIORITY_STYLE[r.data.priority] ?? PRIORITY_STYLE.low;
+        return (
+          <div key={r.id} className="rounded-2xl bg-[#F1F8F3] p-4">
+            <div className="mb-1 flex items-center justify-between gap-2">
+              <p className="text-sm font-semibold text-neutral-900">{r.title}</p>
+              <span
+                className={`shrink-0 rounded-full px-2 py-0.5 text-xs font-medium ${style.badge}`}
+              >
+                {r.data.priority}
+              </span>
+            </div>
+            <p className="text-sm leading-relaxed text-neutral-600">{r.description}</p>
+            <p className="mt-1 text-sm leading-relaxed text-neutral-700">
+              {r.data.recommendation}
+            </p>
+            <p className={`mt-1.5 text-sm font-semibold ${style.amount}`}>
+              ≈ {money(r.data.monthly_saving)} / месяц · ≈ {money(r.data.annual_saving)} / год
+            </p>
+          </div>
+        );
+      })
+    )}
   </div>
 </Card>
+          <SavingsPlanner statementId={currentId} />
         </div>
       </div>
     </div>
