@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from "react";
+import sberLogo from "./assets/sber-logo.png";
 import {
   AreaChart,
   Area,
@@ -145,14 +146,11 @@ function ThemeToggle({
 function Logo() {
   return (
     <div className="flex items-center gap-3">
-      <div className="relative flex h-11 w-11 items-center justify-center rounded-2xl bg-[var(--accent-border)] dark:bg-gradient-to-br dark:from-[#A8CF38] dark:via-[#3FC8A0] dark:to-[#21A038]">
-        <div className="absolute inset-0 hidden rounded-2xl bg-[#A8CF38] opacity-60 blur-lg dark:block" />
-        <svg viewBox="0 0 24 24" className="relative h-6 w-6" fill="none">
-          <path d="M4 9h16M4 15h16" stroke="#FFFFFF" strokeWidth="2.5" className="dark:stroke-[#071410]" strokeLinecap="round" />
-          <circle cx="8" cy="9" r="2.5" fill="#FFFFFF" className="dark:fill-[#071410]" />
-          <circle cx="16" cy="15" r="2.5" fill="#FFFFFF" className="dark:fill-[#071410]" />
-        </svg>
-      </div>
+      <img
+        src={sberLogo}
+        alt="Сбер"
+        className="h-11 w-11 shrink-0"
+      />
       <div>
         <p className="text-xl font-bold leading-tight tracking-tight text-[var(--text)]">
           FinBalance
