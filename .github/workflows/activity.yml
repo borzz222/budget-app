@@ -1,0 +1,22 @@
+name: Daily activity
+
+on:
+  schedule:
+    - cron: "17 4 * * *"   # каждый день в 09:17 по Екатеринбургу
+  workflow_dispatch:        # кнопка ручного запуска
+
+permissions:
+  contents: write
+
+jobs:
+  commit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: |
+          echo "- $(date -u +%F): https://github.com/borzz222/python-practice" >> README.md
+          git config user.name "borzz222"
+          git config user.email "borzz222@users.noreply.github.com"
+          git add README.md
+          git commit -m "Update README $(date -u +%F)"
+          git push
